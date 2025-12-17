@@ -1,4 +1,4 @@
-package Erronka2;
+package Erronka2.view;
 
 import javax.swing.*;
 import java.awt.*;
