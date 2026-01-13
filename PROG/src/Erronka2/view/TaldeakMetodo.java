@@ -1,7 +1,12 @@
 package Erronka2.view;
 
+import Erronka2.model.Jokalaria;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * Taldeak pestañako interfazea eta edukia kudeatzen du.
@@ -9,10 +14,18 @@ import java.awt.*;
 public class TaldeakMetodo {
 
     private JPanel panelTaldeak;
+    private JPanel gridPanel;
+    private JButton saioaAmaituBotoia;
+    private JButton botoia;
+    private DefaultListModel<Jokalaria> model;
+    private ImageIcon icono;
+    private List<Jokalaria> jokalariak;
+    private  JList<Jokalaria> lista;
+    private JScrollPane scrollPane;
+    private Image img;
 
     /**
      * Eraikitzailea - Taldeak panel nagusia sortu eta botoiak gehitu
-     * @param kolorea Atzeko kolorea, kasu honetan urdina
      */
     public TaldeakMetodo(Color kolorea) {
 
@@ -22,43 +35,69 @@ public class TaldeakMetodo {
         // ===============================
         // TALDEEN GRID-A
         // ===============================
-        JPanel gridPanel = new JPanel(new GridLayout(2, 3, 30, 30));
+        gridPanel = new JPanel(new GridLayout(2, 3, 30, 30));
         gridPanel.setBackground(kolorea);
         gridPanel.setBounds(50, 50, 800, 380);
 
-        gridPanel.add(taldeBotoiaSortu("Otxarkoaga Distira", "/LogosEquipos/OtxarkoagaDistira.png"));
-        gridPanel.add(taldeBotoiaSortu("Miribilla Uhinen Jokoak", "/LogosEquipos/MiribillaUhinenJokoak.png"));
-        gridPanel.add(taldeBotoiaSortu("Txurdinaga Harriak", "/LogosEquipos/TxurdinagaHarriak.png"));
-        gridPanel.add(taldeBotoiaSortu("Usansolo Hortzadak", "/LogosEquipos/UsansoloHortzadak.png"));
-        gridPanel.add(taldeBotoiaSortu("Matiko Txirrindulariak", "/LogosEquipos/MatikoTxirrindulariak.png"));
-        gridPanel.add(taldeBotoiaSortu("Santutxu Haizeak", "/LogosEquipos/SantutxuHaizeak.png"));
+        gridPanel.add(taldeBotoiaSortu(
+                "Otxarkoaga Distira",
+                "/Erronka2/images/LogosEquipos/OtxarkoagaDistira.png"));
+
+        gridPanel.add(taldeBotoiaSortu(
+                "Miribilla Uhinen Jokoak",
+                "/Erronka2/images/LogosEquipos/MiribillaUhinenJokoak.png"));
+
+        gridPanel.add(taldeBotoiaSortu(
+                "Txurdinaga Harriak",
+                "/Erronka2/images/LogosEquipos/TxurdinagaHarriak.png"));
+
+        gridPanel.add(taldeBotoiaSortu(
+                "Usansolo Hortzadak",
+                "/Erronka2/images/LogosEquipos/UsansoloHortzadak.png"));
+
+        gridPanel.add(taldeBotoiaSortu(
+                "Matiko Txirrindulariak",
+                "/Erronka2/images/LogosEquipos/MatikoTxirrindulariak.png"));
+
+        gridPanel.add(taldeBotoiaSortu(
+                "Santutxu Haizeak",
+                "/Erronka2/images/LogosEquipos/SantutxuHaizeak.png"));
 
         panelTaldeak.add(gridPanel);
 
         // ===============================
-        // BOTOIA - SAIOA AMAITU
-        // MISMA POSICIÓN Y TAMAÑO
+        // SAIOA AMAITU BOTOIA
         // ===============================
-        JButton saioaAmaituBotoia = new JButton("Saioa amaitu");
+        saioaAmaituBotoia = new JButton("Saioa amaitu");
         saioaAmaituBotoia.setFont(new Font("Arial", Font.BOLD, 18));
         saioaAmaituBotoia.setBackground(Color.RED);
         saioaAmaituBotoia.setForeground(Color.WHITE);
-        saioaAmaituBotoia.setFocusPainted(false);
         saioaAmaituBotoia.setBounds(700, 480, 170, 40);
+        saioaAmaituBotoia.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SwingUtilities.invokeLater(() -> new Login().setVisible(true));
+				JFrame frame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
+				frame.dispose();
+			}
+
+		});
 
         panelTaldeak.add(saioaAmaituBotoia);
     }
 
     /**
-     * Talde bakoitzeko botoia sortzen du ikonoarekin eta testuarekin
+     * Talde bakoitzerako botoia sortzen du (logo + izena)
+     * Klik egitean, taldeko jokalariak erakusten dira
      */
     private JButton taldeBotoiaSortu(String izena, String logoPath) {
-        JButton botoia = new JButton(izena);
 
+        botoia = new JButton(izena);
+
+        // Logoa kargatu
         java.net.URL url = getClass().getResource(logoPath);
         if (url != null) {
-            ImageIcon icono = new ImageIcon(url);
-            Image img = icono.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            icono = new ImageIcon(url);
+            img = icono.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
             botoia.setIcon(new ImageIcon(img));
         }
 
@@ -72,7 +111,76 @@ public class TaldeakMetodo {
         botoia.setContentAreaFilled(false);
         botoia.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
+        // Klik egiterakoan jokalariak erakutsi
+        botoia.addActionListener(e -> erakutsiJokalariak(izena));
+
         return botoia;
+    }
+
+    private void erakutsiJokalariak(String taldeIzena) {
+
+        int taldeKod = lortuTaldeKod(taldeIzena);
+
+        if (taldeKod == -1) {
+            JOptionPane.showMessageDialog(panelTaldeak,
+                    "Taldea ez da aurkitu",
+                    "Errorea",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Modelotik jokalariak lortu
+        jokalariak = Jokalaria.getJokalariakByTaldea(taldeKod);
+
+        if (jokalariak.isEmpty()) {
+            JOptionPane.showMessageDialog(panelTaldeak,
+                    "Ez dago jokalaririk talde honetan",
+                    "Informazioa",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Jokalariak JList batean sartu
+        model = new DefaultListModel<>();
+        for (Jokalaria j : jokalariak) {
+            model.addElement(j);
+        }
+
+        lista = new JList<>(model);
+        lista.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        scrollPane = new JScrollPane(lista);
+        scrollPane.setPreferredSize(new Dimension(350, 250));
+
+        JOptionPane.showMessageDialog(
+                panelTaldeak,
+                scrollPane,
+                taldeIzena + " - Jokalariak",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    /**
+     * Taldearen izenaren arabera bere kodea bueltatzen du
+     */
+    private int lortuTaldeKod(String taldeIzena) {
+
+        switch (taldeIzena) {
+            case "Otxarkoaga Distira":
+                return 1;
+            case "Miribilla Uhinen Jokoak":
+                return 2;
+            case "Txurdinaga Harriak":
+                return 3;
+            case "Usansolo Hortzadak":
+                return 4;
+            case "Matiko Txirrindulariak":
+                return 5;
+            case "Santutxu Haizeak":
+                return 6;
+            default:
+                return -1;
+        }
     }
 
     /**

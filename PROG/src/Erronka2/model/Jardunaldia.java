@@ -2,7 +2,7 @@ package Erronka2.model;
 
 import java.util.Arrays;
 
-public class Jardunaldia {
+public class Jardunaldia  {
     private int jardunaldi_kod;
     private String hasiera_data;
     private String amaiera_data;
