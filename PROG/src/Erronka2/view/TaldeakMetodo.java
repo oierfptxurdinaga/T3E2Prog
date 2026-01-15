@@ -9,61 +9,69 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 /**
- * Taldeak pestañako interfazea eta edukia kudeatzen du.
+ * Taldeak fitxako interfazea eta edukia kudeatzen du.
  */
 public class TaldeakMetodo {
 
-    private JPanel panelTaldeak;
-    private JPanel gridPanel;
+    private JPanel taldeakPanela;
+    private JPanel sarePanela;
     private JButton saioaAmaituBotoia;
     private JButton botoia;
-    private DefaultListModel<Jokalaria> model;
-    private ImageIcon icono;
+    private DefaultListModel<Jokalaria> modeloa;
+    private ImageIcon ikonoa;
     private List<Jokalaria> jokalariak;
-    private  JList<Jokalaria> lista;
-    private JScrollPane scrollPane;
-    private Image img;
+    private  JList<Jokalaria> zerrenda;
+    private JScrollPane korritzePanela;
+    private Image irudia;
 
     /**
      * Eraikitzailea - Taldeak panel nagusia sortu eta botoiak gehitu
      */
     public TaldeakMetodo(Color kolorea) {
 
-        panelTaldeak = new JPanel(null);
-        panelTaldeak.setBackground(kolorea);
+        taldeakPanela = new JPanel(null);
+        taldeakPanela.setBackground(kolorea);
 
         // ===============================
-        // TALDEEN GRID-A
+        // TALDEEN SAREA
         // ===============================
-        gridPanel = new JPanel(new GridLayout(2, 3, 30, 30));
-        gridPanel.setBackground(kolorea);
-        gridPanel.setBounds(50, 50, 800, 380);
+        sarePanela = new JPanel(new GridLayout(2, 3, 30, 30));
+        sarePanela.setBackground(kolorea);
+        sarePanela.setBounds(50, 50, 800, 380);
 
-        gridPanel.add(taldeBotoiaSortu(
-                "Otxarkoaga Distira",
-                "/Erronka2/images/LogosEquipos/OtxarkoagaDistira.png"));
+        try {
+            sarePanela.add(taldeBotoiaSortu(
+                    "Otxarkoaga Distira",
+                    "/Erronka2/images/LogosEquipos/OtxarkoagaDistira.png"));
 
-        gridPanel.add(taldeBotoiaSortu(
-                "Miribilla Uhinen Jokoak",
-                "/Erronka2/images/LogosEquipos/MiribillaUhinenJokoak.png"));
+            sarePanela.add(taldeBotoiaSortu(
+                    "Miribilla Uhinen Jokoak",
+                    "/Erronka2/images/LogosEquipos/MiribillaUhinenJokoak.png"));
 
-        gridPanel.add(taldeBotoiaSortu(
-                "Txurdinaga Harriak",
-                "/Erronka2/images/LogosEquipos/TxurdinagaHarriak.png"));
+            sarePanela.add(taldeBotoiaSortu(
+                    "Txurdinaga Harriak",
+                    "/Erronka2/images/LogosEquipos/TxurdinagaHarriak.png"));
 
-        gridPanel.add(taldeBotoiaSortu(
-                "Usansolo Hortzadak",
-                "/Erronka2/images/LogosEquipos/UsansoloHortzadak.png"));
+            sarePanela.add(taldeBotoiaSortu(
+                    "Usansolo Hortzadak",
+                    "/Erronka2/images/LogosEquipos/UsansoloHortzadak.png"));
 
-        gridPanel.add(taldeBotoiaSortu(
-                "Matiko Txirrindulariak",
-                "/Erronka2/images/LogosEquipos/MatikoTxirrindulariak.png"));
+            sarePanela.add(taldeBotoiaSortu(
+                    "Matiko Txirrindulariak",
+                    "/Erronka2/images/LogosEquipos/MatikoTxirrindulariak.png"));
 
-        gridPanel.add(taldeBotoiaSortu(
-                "Santutxu Haizeak",
-                "/Erronka2/images/LogosEquipos/SantutxuHaizeak.png"));
+            sarePanela.add(taldeBotoiaSortu(
+                    "Santutxu Haizeak",
+                    "/Erronka2/images/LogosEquipos/SantutxuHaizeak.png"));
+                    
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(taldeakPanela,
+                "Errorea talde botoiak sortzerakoan: " + e.getMessage(),
+                "Errorea", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
 
-        panelTaldeak.add(gridPanel);
+        taldeakPanela.add(sarePanela);
 
         // ===============================
         // SAIOA AMAITU BOTOIA
@@ -75,30 +83,43 @@ public class TaldeakMetodo {
         saioaAmaituBotoia.setBounds(700, 480, 170, 40);
         saioaAmaituBotoia.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(() -> new Login().setVisible(true));
-				JFrame frame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
-				frame.dispose();
+				try {
+					SwingUtilities.invokeLater(() -> new Login().setVisible(true));
+					JFrame frame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
+					frame.dispose();
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(taldeakPanela,
+						"Errorea saioa amaitzerakoan: " + ex.getMessage(),
+						"Errorea", JOptionPane.ERROR_MESSAGE);
+					ex.printStackTrace();
+				}
 			}
 
 		});
 
-        panelTaldeak.add(saioaAmaituBotoia);
+        taldeakPanela.add(saioaAmaituBotoia);
     }
 
     /**
      * Talde bakoitzerako botoia sortzen du (logo + izena)
      * Klik egitean, taldeko jokalariak erakusten dira
      */
-    private JButton taldeBotoiaSortu(String izena, String logoPath) {
+    private JButton taldeBotoiaSortu(String izena, String logoBidea) throws Exception {
 
         botoia = new JButton(izena);
 
         // Logoa kargatu
-        java.net.URL url = getClass().getResource(logoPath);
-        if (url != null) {
-            icono = new ImageIcon(url);
-            img = icono.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-            botoia.setIcon(new ImageIcon(img));
+        try {
+            java.net.URL url = getClass().getResource(logoBidea);
+            if (url != null) {
+                ikonoa = new ImageIcon(url);
+                irudia = ikonoa.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                botoia.setIcon(new ImageIcon(irudia));
+            } else {
+                throw new Exception("Ezin izan da logoa kargatu: " + logoBidea);
+            }
+        } catch (Exception e) {
+            throw new Exception("Errorea logo kargatzerakoan talderako " + izena + ": " + e.getMessage(), e);
         }
 
         botoia.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -112,58 +133,77 @@ public class TaldeakMetodo {
         botoia.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         // Klik egiterakoan jokalariak erakutsi
-        botoia.addActionListener(e -> erakutsiJokalariak(izena));
+        botoia.addActionListener(e -> {
+            try {
+                erakutsiJokalariak(izena);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(taldeakPanela,
+                    "Errorea jokalariak erakusteko: " + ex.getMessage(),
+                    "Errorea", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        });
 
         return botoia;
     }
 
-    private void erakutsiJokalariak(String taldeIzena) {
+    private void erakutsiJokalariak(String taldeIzena) throws Exception {
 
         int taldeKod = lortuTaldeKod(taldeIzena);
 
         if (taldeKod == -1) {
-            JOptionPane.showMessageDialog(panelTaldeak,
-                    "Taldea ez da aurkitu",
-                    "Errorea",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new IllegalArgumentException("Taldea ez da aurkitu: " + taldeIzena);
         }
 
-        // Modelotik jokalariak lortu
-        jokalariak = Jokalaria.getJokalariakByTaldea(taldeKod);
+        try {
+            // Modelotik jokalariak lortu
+            jokalariak = Jokalaria.getJokalariakByTaldea(taldeKod);
 
-        if (jokalariak.isEmpty()) {
-            JOptionPane.showMessageDialog(panelTaldeak,
-                    "Ez dago jokalaririk talde honetan",
-                    "Informazioa",
-                    JOptionPane.INFORMATION_MESSAGE);
-            return;
+            if (jokalariak == null) {
+                throw new IllegalStateException("Jokalarien zerrenda nulua itzuli da.");
+            }
+
+            if (jokalariak.isEmpty()) {
+                JOptionPane.showMessageDialog(taldeakPanela,
+                        "Ez dago jokalaririk talde honetan",
+                        "Informazioa",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Jokalariak JList batean sartu
+            modeloa = new DefaultListModel<>();
+            for (Jokalaria j : jokalariak) {
+                if (j == null) {
+                    throw new IllegalStateException("Jokalari nulua aurkitu da.");
+                }
+                modeloa.addElement(j);
+            }
+
+            zerrenda = new JList<>(modeloa);
+            zerrenda.setFont(new Font("Arial", Font.PLAIN, 16));
+
+            korritzePanela = new JScrollPane(zerrenda);
+            korritzePanela.setPreferredSize(new Dimension(350, 250));
+
+            JOptionPane.showMessageDialog(
+                    taldeakPanela,
+                    korritzePanela,
+                    taldeIzena + " - Jokalariak",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        } catch (Exception e) {
+            throw new Exception("Errorea jokalariak erakusteko " + taldeIzena + " talderako: " + e.getMessage(), e);
         }
-
-        // Jokalariak JList batean sartu
-        model = new DefaultListModel<>();
-        for (Jokalaria j : jokalariak) {
-            model.addElement(j);
-        }
-
-        lista = new JList<>(model);
-        lista.setFont(new Font("Arial", Font.PLAIN, 16));
-
-        scrollPane = new JScrollPane(lista);
-        scrollPane.setPreferredSize(new Dimension(350, 250));
-
-        JOptionPane.showMessageDialog(
-                panelTaldeak,
-                scrollPane,
-                taldeIzena + " - Jokalariak",
-                JOptionPane.INFORMATION_MESSAGE
-        );
     }
 
     /**
      * Taldearen izenaren arabera bere kodea bueltatzen du
      */
-    private int lortuTaldeKod(String taldeIzena) {
+    private int lortuTaldeKod(String taldeIzena) throws IllegalArgumentException {
+        if (taldeIzena == null || taldeIzena.trim().isEmpty()) {
+            throw new IllegalArgumentException("Taldearen izena ezin da hutsik egon.");
+        }
 
         switch (taldeIzena) {
             case "Otxarkoaga Distira":
@@ -186,7 +226,7 @@ public class TaldeakMetodo {
     /**
      * Taldeak panela itzultzen du
      */
-    public JPanel getPanel() {
-        return panelTaldeak;
+    public JPanel getPanela() {
+        return taldeakPanela;
     }
 }

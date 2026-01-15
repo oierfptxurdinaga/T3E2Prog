@@ -13,265 +13,354 @@ import Erronka2.model.Partidua;
 
 public class FitxaketakMetodo {
 
-    private JPanel panel;
+    private JPanel panela;
     private Color urdina;
     private JComboBox<Taldeak> taldeaCombo;
-    private JList<Jokalaria> jokalariakLista;
-    private DefaultListModel<Jokalaria> listModel;
+    private JList<Jokalaria> jokalariakZerrenda;
+    private DefaultListModel<Jokalaria> zerrendaModeloa;
     private JComboBox<Taldeak> helburuTaldeaCombo; 
     
     private JButton saioaAmaituBotoia;
-    private JButton transpasatuBotoia;
+    private JButton traspasatuBotoia;
     
     private JLabel titulua;
-    private JLabel taldeaLabel;
-    private JLabel jokalariakLabel;
-    private JLabel helburuTaldeaLabel;
+    private JLabel taldeaEtiketa;
+    private JLabel jokalariakEtiketa;
+    private JLabel helburuTaldeaEtiketa;
     
-    private JScrollPane scrollJokalariak;
-    private JLabel abisuaLabel; // Nuevo: para mostrar advertencia
+    private JScrollPane korritzePanelaJokalariak;
+    private JLabel abisuaEtiketa; // Berria: abisua erakusteko
 
     public FitxaketakMetodo(Color urdina) {
         this.urdina = urdina;
-        panel = new JPanel(null);
-        panel.setBackground(urdina);
+        panela = new JPanel(null);
+        panela.setBackground(urdina);
 
         // Izenburua
         titulua = new JLabel("FITXAKETAK");
         titulua.setForeground(Color.WHITE);
         titulua.setFont(new Font("Arial", Font.BOLD, 32));
         titulua.setBounds(350, 40, 300, 40);
-        panel.add(titulua);
+        panela.add(titulua);
         
         // ===============================
-        // ADVERTENCIA SI LA TEMPORADA HA EMPEZADO
+        // ABISUA DENBORALDIA HASITA BADAGO
         // ===============================
-        abisuaLabel = new JLabel("");
-        abisuaLabel.setForeground(Color.YELLOW);
-        abisuaLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        abisuaLabel.setBounds(100, 100, 700, 30);
-        abisuaLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(abisuaLabel);
+        abisuaEtiketa = new JLabel("");
+        abisuaEtiketa.setForeground(Color.YELLOW);
+        abisuaEtiketa.setFont(new Font("Arial", Font.BOLD, 16));
+        abisuaEtiketa.setBounds(100, 100, 700, 30);
+        abisuaEtiketa.setHorizontalAlignment(SwingConstants.CENTER);
+        panela.add(abisuaEtiketa);
 
-        // Taldea aukeratzeko label eta combo boxa
-        taldeaLabel = new JLabel("Aukeratu taldea:");
-        taldeaLabel.setForeground(Color.WHITE);
-        taldeaLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        taldeaLabel.setBounds(100, 150, 200, 30);
-        panel.add(taldeaLabel);
+        // Taldea aukeratzeko etiketa eta kombo kutxa
+        taldeaEtiketa = new JLabel("Aukeratu taldea:");
+        taldeaEtiketa.setForeground(Color.WHITE);
+        taldeaEtiketa.setFont(new Font("Arial", Font.BOLD, 18));
+        taldeaEtiketa.setBounds(100, 150, 200, 30);
+        panela.add(taldeaEtiketa);
 
         taldeaCombo = new JComboBox<>();
-        for (Taldeak t : TaldeFactory.sortuTaldeak()) {
-            taldeaCombo.addItem(t);
+        try {
+            for (Taldeak t : TaldeFactory.sortuTaldeak()) {
+                if (t != null) {
+                    taldeaCombo.addItem(t);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errorea taldeak kargatzerakoan: " + e.getMessage());
+            JOptionPane.showMessageDialog(panela, 
+                "Errorea taldeak kargatzerakoan: " + e.getMessage(), 
+                "Errorea", JOptionPane.ERROR_MESSAGE);
         }
         taldeaCombo.setBounds(100, 190, 250, 35);
-        panel.add(taldeaCombo);
+        panela.add(taldeaCombo);
 
-        // Jokalarien zerrenda label
-        jokalariakLabel = new JLabel("Jokalariak:");
-        jokalariakLabel.setForeground(Color.WHITE);
-        jokalariakLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        jokalariakLabel.setBounds(100, 240, 200, 30);
-        panel.add(jokalariakLabel);
+        // Jokalarien zerrenda etiketa
+        jokalariakEtiketa = new JLabel("Jokalariak:");
+        jokalariakEtiketa.setForeground(Color.WHITE);
+        jokalariakEtiketa.setFont(new Font("Arial", Font.BOLD, 18));
+        jokalariakEtiketa.setBounds(100, 240, 200, 30);
+        panela.add(jokalariakEtiketa);
 
-        // DefaultListModel y JList
-        listModel = new DefaultListModel<>();
-        jokalariakLista = new JList<>(listModel);
+        // DefaultListModel eta JList
+        zerrendaModeloa = new DefaultListModel<>();
+        jokalariakZerrenda = new JList<>(zerrendaModeloa);
    
         
-        scrollJokalariak = new JScrollPane(jokalariakLista);
-        scrollJokalariak.setBounds(100, 280, 250, 200);
-        panel.add(scrollJokalariak);
+        korritzePanelaJokalariak = new JScrollPane(jokalariakZerrenda);
+        korritzePanelaJokalariak.setBounds(100, 280, 250, 200);
+        panela.add(korritzePanelaJokalariak);
 
-        // Transpasatu nahi den taldea aukeratzeko label eta combo boxa
-        helburuTaldeaLabel = new JLabel("Transpasatu nahi den taldea:");
-        helburuTaldeaLabel.setForeground(Color.WHITE);
-        helburuTaldeaLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        helburuTaldeaLabel.setBounds(450, 150, 300, 30);
-        panel.add(helburuTaldeaLabel);
+        // Traspasatu nahi den taldea aukeratzeko etiketa eta kombo kutxa
+        helburuTaldeaEtiketa = new JLabel("Traspasatu nahi den taldea:");
+        helburuTaldeaEtiketa.setForeground(Color.WHITE);
+        helburuTaldeaEtiketa.setFont(new Font("Arial", Font.BOLD, 18));
+        helburuTaldeaEtiketa.setBounds(450, 150, 300, 30);
+        panela.add(helburuTaldeaEtiketa);
 
         helburuTaldeaCombo = new JComboBox<>();
-        for (Taldeak t : TaldeFactory.sortuTaldeak()) {
-            helburuTaldeaCombo.addItem(t);
+        try {
+            for (Taldeak t : TaldeFactory.sortuTaldeak()) {
+                if (t != null) {
+                    helburuTaldeaCombo.addItem(t);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errorea helburu taldeak kargatzerakoan: " + e.getMessage());
+            JOptionPane.showMessageDialog(panela, 
+                "Errorea helburu taldeak kargatzerakoan: " + e.getMessage(), 
+                "Errorea", JOptionPane.ERROR_MESSAGE);
         }
         helburuTaldeaCombo.setBounds(450, 190, 250, 35);
-        panel.add(helburuTaldeaCombo);
+        panela.add(helburuTaldeaCombo);
 
-        // Transpasatu botoia
-        transpasatuBotoia = new JButton("Transpasatu");
-        transpasatuBotoia.setBounds(475, 280, 200, 40);
+        // Traspasatu botoia
+        traspasatuBotoia = new JButton("Traspasatu");
+        traspasatuBotoia.setBounds(475, 280, 200, 40);
         
-        transpasatuBotoia.addActionListener(new ActionListener() {
+        traspasatuBotoia.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                traspasatuJokalariaGUI();
+                try {
+                    traspasatuJokalariaGUI();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panela, 
+                        "Errorea jokalaria traspasatzerakoan: " + ex.getMessage(), 
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
             }
         });
-        panel.add(transpasatuBotoia);
+        panela.add(traspasatuBotoia);
         
-        // Boton Saioa Amaitu (gorria)
+        // Saioa Amaitu botoia (gorria)
         saioaAmaituBotoia = new JButton("Saioa amaitu");
         saioaAmaituBotoia.setFont(new Font("Arial", Font.BOLD, 18));
         saioaAmaituBotoia.setBackground(Color.RED);
         saioaAmaituBotoia.setForeground(Color.WHITE);
         saioaAmaituBotoia.setBounds(700, 480, 170, 40);
         saioaAmaituBotoia.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(() -> new Login().setVisible(true));
-				JFrame frame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
-				frame.dispose();
-			}
-
-		});
-        panel.add(saioaAmaituBotoia);
-        
-        // Gehitu taldeCombo bere actionlistener
-        taldeaCombo.addActionListener(new ActionListener() {
-        	
-            @Override
-            // Metodoari deitu
             public void actionPerformed(ActionEvent e) {
-                kargatuJokalariak();
+                try {
+                    SwingUtilities.invokeLater(() -> new Login().setVisible(true));
+                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
+                    frame.dispose();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panela, 
+                        "Errorea saioa amaitzerakoan: " + ex.getMessage(), 
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
+        });
+        panela.add(saioaAmaituBotoia);
+        
+        // Gehitu taldeCombo-ri bere actionlistener
+        taldeaCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    kargatuJokalariak();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panela, 
+                        "Errorea jokalariak kargatzerakoan: " + ex.getMessage(), 
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
             }
         });
         
-        // Cargar jugadores inicialmente
-        kargatuJokalariak();
+        // Jokalariak hasieran kargatu
+        try {
+            kargatuJokalariak();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(panela, 
+                "Errorea hasierako jokalariak kargatzerakoan: " + e.getMessage(), 
+                "Errorea", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
         
-        // Comprobar estado de la temporada
-        eguneratuInterfazeaTemporada();
+        // Denboraldiaren egoera egiaztatu
+        eguneratuInterfazeaDenboraldia();
     }
     
     /**
-     * Comprobar estado de la temporada y habilitar/deshabilitar controles
+     * Denboraldiaren egoera egiaztatu eta kontrolak gaitu/desgaitu
      */
-    private void eguneratuInterfazeaTemporada() {
-        // Verificar si hay temporada actual y si ha empezado
-        String unekoDenboraldia = Partidua.getUnekoDenboraldia();
-        boolean denboraldiaHasita = Partidua.isDenboraldiaHasita();
-        
-        if (unekoDenboraldia != null && denboraldiaHasita) {
-            // Temporada ha empezado, deshabilitar fichajes
-            transpasatuBotoia.setEnabled(false);
+    private void eguneratuInterfazeaDenboraldia() {
+        try {
+            // Egiaztatu denboraldi aktiborik dagoen eta hasita dagoen
+            String unekoDenboraldia = Partidua.getUnekoDenboraldia();
+            boolean denboraldiaHasita = Partidua.isDenboraldiaHasita();
+            
+            if (unekoDenboraldia != null && denboraldiaHasita) {
+                // Denboraldia hasita dago, fitxaketak desgaitu
+                traspasatuBotoia.setEnabled(false);
+                taldeaCombo.setEnabled(false);
+                helburuTaldeaCombo.setEnabled(false);
+                abisuaEtiketa.setText("OHARRA: Denboraldia hasita dago. Ezin dira fitxaketak egin.");
+                
+                // Abisuaren kolorea aldatu
+                abisuaEtiketa.setForeground(Color.RED);
+            } else {
+                // Denboraldia ez dago hasita edo ez dago denboraldirik, fitxaketak baimendu
+                traspasatuBotoia.setEnabled(true);
+                taldeaCombo.setEnabled(true);
+                helburuTaldeaCombo.setEnabled(true);
+                abisuaEtiketa.setText("Fitxaketak egin daitezke denboraldia hasi aurretik.");
+                
+                // Informazioaren kolorea aldatu
+                abisuaEtiketa.setForeground(Color.YELLOW);
+            }
+        } catch (Exception e) {
+            System.err.println("Errorea denboraldiaren egoera egiaztatzerakoan: " + e.getMessage());
+            // En caso de error, deshabilitar todo por seguridad
+            traspasatuBotoia.setEnabled(false);
             taldeaCombo.setEnabled(false);
             helburuTaldeaCombo.setEnabled(false);
-            abisuaLabel.setText("OHARRA: Denboraldia hasita dago. Ezin dira fitxaketak egin.");
-            
-            // Cambiar color de advertencia
-            abisuaLabel.setForeground(Color.RED);
-        } else {
-            // Temporada no ha empezado o no hay temporada, permitir fichajes
-            transpasatuBotoia.setEnabled(true);
-            taldeaCombo.setEnabled(true);
-            helburuTaldeaCombo.setEnabled(true);
-            abisuaLabel.setText("Fitxaketak egin daitezke denboraldia hasi aurretik.");
-            
-            // Cambiar color de información
-            abisuaLabel.setForeground(Color.YELLOW);
+            abisuaEtiketa.setText("Errorea sistemaren egoera egiaztatzerakoan.");
+            abisuaEtiketa.setForeground(Color.RED);
         }
     }
     
     /**
      * Metodo hau erabili da aukeratutako taldeen jokalariak kargatzeko
      */
-    private void kargatuJokalariak() {
-        listModel.clear();
+    private void kargatuJokalariak() throws Exception {
+        zerrendaModeloa.clear();
 
         Taldeak hautatutakoTaldea = (Taldeak) taldeaCombo.getSelectedItem();
 
-        if (hautatutakoTaldea != null) {
+        if (hautatutakoTaldea == null) {
+            throw new IllegalStateException("Ez da talderik aukeratu.");
+        }
+        
+        if (hautatutakoTaldea.getTalde_kod() != 0) { // "-" placeholder-a baztertu
 
             System.out.println("Talde aukeratua: "
                 + hautatutakoTaldea.getIzena()
                 + " | kodea: "
                 + hautatutakoTaldea.getTalde_kod());
 
-            List<Jokalaria> jokalariak =
-                Jokalaria.getJokalariakByTaldea(hautatutakoTaldea.getTalde_kod());
+            List<Jokalaria> jokalariak;
+            try {
+                jokalariak = Jokalaria.getJokalariakByTaldea(hautatutakoTaldea.getTalde_kod());
+                
+                if (jokalariak == null) {
+                    throw new IllegalStateException("Jokalarien zerrenda nulua itzuli da.");
+                }
+                
+            } catch (Exception e) {
+                throw new Exception("Errorea jokalariak datu basetik kargatzerakoan: " + e.getMessage(), e);
+            }
 
             System.out.println("Aurkitutako jokalariak: " + jokalariak.size());
 
             for (Jokalaria jokalaria : jokalariak) {
-                listModel.addElement(jokalaria);
+                if (jokalaria == null) {
+                    throw new IllegalStateException("Jokalari nulua aurkitu da.");
+                }
+                zerrendaModeloa.addElement(jokalaria);
             }
         }
     }
-
     
     /**
-     * Método de la interfaz gráfica para manejar el traspaso Metodo hau da traspasoa egiteko
+     * Interfaze grafikoaren metodoa traspasoa kudeatzeko
      */
-    private void traspasatuJokalariaGUI() {
-        // Verificar si se pueden hacer fichajes
-        if (Partidua.isDenboraldiaHasita()) {
-            JOptionPane.showMessageDialog(null, 
-                "Ezin dira fitxaketak egin denboraldia hasita dagoelako.", 
-                "Abisua", JOptionPane.WARNING_MESSAGE);
-            return;
+    private void traspasatuJokalariaGUI() throws Exception {
+        // Egiaztatu fitxaketak egin daitezkeen
+        try {
+            if (Partidua.isDenboraldiaHasita()) {
+                throw new IllegalStateException("Ezin dira fitxaketak egin denboraldia hasita dagoelako.");
+            }
+        } catch (Exception e) {
+            throw new Exception("Errorea denboraldiaren egoera egiaztatzerakoan: " + e.getMessage(), e);
         }
         
-        // Hartutako jokalariak
-        Jokalaria hautatutakoJokalaria = jokalariakLista.getSelectedValue();
+        // Hautatutako jokalaria
+        Jokalaria hautatutakoJokalaria = jokalariakZerrenda.getSelectedValue();
+        
         // Ez badugu aukeratu jokalaririk
         if (hautatutakoJokalaria == null) {
-        	JOptionPane.showMessageDialog(null, "Mesedez, aukeratu jokalari bat traspasatzeko.", 
-                    "Abisua", JOptionPane.WARNING_MESSAGE);
-            
-            return;
+            throw new IllegalArgumentException("Mesedez, aukeratu jokalari bat traspasatzeko.");
         }
         
         // Aukeratu ze taldean egin nahi dugun traspasoa
         Taldeak helburuTaldea = (Taldeak) helburuTaldeaCombo.getSelectedItem();
+        
         // Ez badugu aukeratu Talderik
         if (helburuTaldea == null) {
-            JOptionPane.showMessageDialog(null, "Mesedez, aukeratu talde helburu bat.", 
-                    "Abisua", JOptionPane.WARNING_MESSAGE);
-    
-            return;
+            throw new IllegalArgumentException("Mesedez, aukeratu talde helburu bat.");
+        }
+        
+        if (helburuTaldea.getTalde_kod() == 0) {
+            throw new IllegalArgumentException("Aukeratu talde helburu balido bat (ez '-').");
         }
         
         // Egiaztatu bi ComboBox-sean ez aukeratzea talde berdins
         if (hautatutakoJokalaria.getTaldeKod() == helburuTaldea.getTalde_kod()) {
-        	JOptionPane.showMessageDialog(null, "Jokalaria hau talde honetan dago.", 
-                    "Abisua", JOptionPane.WARNING_MESSAGE);
-            return;
+            throw new IllegalArgumentException("Jokalaria hau talde honetan dago.");
         }
         
         // Mezu bat jarri ziurtatzeko traspasoa egin nahi duen
-        int erantzuna = JOptionPane.showConfirmDialog(panel,
+        int erantzuna = JOptionPane.showConfirmDialog(panela,
             hautatutakoJokalaria.getIzena() + " jokalaria " + helburuTaldea.getIzena() + " taldera traspasatu nahi duzu?",
             "Traspasoa baieztatu",
             JOptionPane.YES_NO_OPTION);
         
         if (erantzuna == JOptionPane.YES_OPTION) {
-            // Metodoari deitu traspasoa egiteko
-            boolean traspasoExitoso = Jokalaria.traspasatuJokalaria(
-                hautatutakoJokalaria, 
-                helburuTaldea.getTalde_kod()
-            );
-            
-            if (traspasoExitoso) {
-                // List berriaraztu
+            try {
+                // Jatorrizko taldearen izena lortu
+                String taldeJatorriIzena = Jokalaria.getTaldeIzenaByKod(hautatutakoJokalaria.getTaldeKod());
+                
+                // Validar nombre del equipo
+                if (taldeJatorriIzena == null || taldeJatorriIzena.equals("Ezezaguna")) {
+                    throw new IllegalStateException("Ezin izan da jatorrizko taldearen izena lortu.");
+                }
+                
+                // Metodoari deitu traspasoa egiteko
+                boolean traspasoArrakastatsua = Jokalaria.traspasatuJokalaria(
+                    hautatutakoJokalaria, 
+                    helburuTaldea.getTalde_kod()
+                );
+                
+                if (!traspasoArrakastatsua) {
+                    throw new Exception("Traspasoa huts egin du.");
+                }
+                
+                // Zerrenda berriaraztu
                 kargatuJokalariak();
                 
-                // Mezua erakutzi
-                JOptionPane.showMessageDialog(null, hautatutakoJokalaria.getIzena() + " jokalaria " + helburuTaldea.getIzena() + " taldera traspasatu da.", "Traspasoa burututa", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, "Errorea traspasoa egiterakoan.", "Errorea", JOptionPane.ERROR_MESSAGE);
+                // Arrakasta mezua erakutsi
+                JOptionPane.showMessageDialog(null, 
+                    hautatutakoJokalaria.getIzena() + " traspasatu da " + taldeJatorriIzena + 
+                    " taldetik " + helburuTaldea.getIzena() + " taldera.", 
+                    "Traspasoa burututa", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                    
+                // Konsolan erakutsi (log simulazioa)
+                System.out.println("TRASPASOA: " + hautatutakoJokalaria.getIzena() + 
+                                 " " + taldeJatorriIzena + "-tik " + 
+                                 helburuTaldea.getIzena() + "-ra Erabiltzaileak");
+                                 
+            } catch (Exception e) {
+                throw new Exception("Errorea traspasoa exekutatzeko: " + e.getMessage(), e);
             }
         }
     }
     
-    public JPanel getPanel() {
-        return panel;
+    public JPanel getPanela() {
+        return panela;
     }
     
-    public JList<Jokalaria> getJokalariakLista() {
-        return jokalariakLista;
+    public JList<Jokalaria> getJokalariakZerrenda() {
+        return jokalariakZerrenda;
     }
     
-    public DefaultListModel<Jokalaria> getListModel() {
-        return listModel;
+    public DefaultListModel<Jokalaria> getZerrendaModeloa() {
+        return zerrendaModeloa;
     }
     
     public JComboBox<Taldeak> getTaldeaCombo() {

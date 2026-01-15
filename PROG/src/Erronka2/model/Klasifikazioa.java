@@ -1,5 +1,6 @@
 package Erronka2.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,113 +8,139 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Klasifikazioa {
+public class Klasifikazioa implements Serializable {
+    // Serializable interfazeak objektuak gordetzeko aukera ematen du
+    private static final long serialVersionUID = 1L;
     
+    // Talde bakoitzaren klasifikazioa gordetzeko mapa: talde->klasifikazioa
     private static Map<Taldeak, TaldearenKlasifikazioa> klasifikazioaMap = new HashMap<>();
     
+    // Static blokean klasifikazioa hasieratu talde guztiekin
     static {
-        inicializatuKlasifikazioa();
+        berrabiarazi();
     }
     
-    private static void inicializatuKlasifikazioa() {
+    /**
+     * Klasifikazioa berrabiarazi: mapa garbitu eta talde guztiak berriro gehitu
+     */
+    public static void berrabiarazi() {
         klasifikazioaMap.clear();
         List<Taldeak> taldeak = Taldeak.TaldeFactory.sortuTaldeak();
         for (Taldeak taldea : taldeak) {
-            if (!taldea.getIzena().equals("-")) { // Excluir el placeholder
+            if (taldea.getTalde_kod() != 0) { // "-" placeholder-a baztertu
                 klasifikazioaMap.put(taldea, new TaldearenKlasifikazioa(taldea));
             }
         }
     }
     
-    public static void eguneratuPartiduarekin(Partidua partidua) {
-        Taldeak etxekoa = partidua.getEtxeko_taldea();
-        Taldeak kanpokoa = partidua.getKanpoko_taldea();
+    /**
+     * Klasifikazioa hasieratu denboraldi bateko partiduetatik
+     * @param denboraldia Denboraldiaren izena/identifikatzailea
+     */
+    public static void hasieratuPartiduetatik(String denboraldia) {
+        berrabiarazi();
         
-        int etxekoSetak = partidua.getEtxekoTaldekoSetak();
-        int kanpokoSetak = partidua.getKanpokoTaldekoSetak();
-        
-        // Obtener o crear las estadísticas de cada equipo
-        TaldearenKlasifikazioa etxekoKlasifikazioa = klasifikazioaMap.get(etxekoa);
-        TaldearenKlasifikazioa kanpokoKlasifikazioa = klasifikazioaMap.get(kanpokoa);
-        
-        if (etxekoKlasifikazioa == null) {
-            etxekoKlasifikazioa = new TaldearenKlasifikazioa(etxekoa);
-            klasifikazioaMap.put(etxekoa, etxekoKlasifikazioa);
-        }
-        
-        if (kanpokoKlasifikazioa == null) {
-            kanpokoKlasifikazioa = new TaldearenKlasifikazioa(kanpokoa);
-            klasifikazioaMap.put(kanpokoa, kanpokoKlasifikazioa);
-        }
-        
-        // Ambos equipos han jugado un partido
-        etxekoKlasifikazioa.gehitupartidaJokatua();
-        kanpokoKlasifikazioa.gehitupartidaJokatua();
-        
-        // Añadir sets ganados y perdidos
-        etxekoKlasifikazioa.gehituSetakIrabaziak(etxekoSetak);
-        etxekoKlasifikazioa.gehituSetakGalduak(kanpokoSetak);
-        
-        kanpokoKlasifikazioa.gehituSetakIrabaziak(kanpokoSetak);
-        kanpokoKlasifikazioa.gehituSetakGalduak(etxekoSetak);
-        
-        // Determinar el ganador (mejor de 5 sets)
-        if (etxekoSetak > kanpokoSetak) {
-            etxekoKlasifikazioa.gehitupartidaIrabazia();
-            kanpokoKlasifikazioa.gehitupartidaGaldua();
-        } else if (etxekoSetak < kanpokoSetak) {
-            kanpokoKlasifikazioa.gehitupartidaIrabazia();
-            etxekoKlasifikazioa.gehitupartidaGaldua();
-        } else {
-            // Empate (raro en voleibol al mejor de 5)
-            // No se suman puntos por empate
-        }
-    }
-    
-    public static List<TaldearenKlasifikazioa> getKlasifikazioaOrdenatua() {
-        List<TaldearenKlasifikazioa> klasifikazioa = new ArrayList<>(klasifikazioaMap.values());
-        
-        // Ordenar por puntos (descendente), luego por diferencia de sets, luego por sets ganados
-        Collections.sort(klasifikazioa, new Comparator<TaldearenKlasifikazioa>() {
-            @Override
-            public int compare(TaldearenKlasifikazioa t1, TaldearenKlasifikazioa t2) {
-                // Primero por puntos
-                if (t1.getPuntuak() != t2.getPuntuak()) {
-                    return Integer.compare(t2.getPuntuak(), t1.getPuntuak()); // descendente
-                }
-                // Si hay empate, por diferencia de sets
-                if (t1.getSetDiferentzia() != t2.getSetDiferentzia()) {
-                    return Integer.compare(t2.getSetDiferentzia(), t1.getSetDiferentzia());
-                }
-                // Si aún hay empate, por sets ganados
-                if (t1.getSetakIrabaziak() != t2.getSetakIrabaziak()) {
-                    return Integer.compare(t2.getSetakIrabaziak(), t1.getSetakIrabaziak());
-                }
-                // Si aún hay empate, por partidos ganados
-                if (t1.getPartidaIrabaziak() != t2.getPartidaIrabaziak()) {
-                    return Integer.compare(t2.getPartidaIrabaziak(), t1.getPartidaIrabaziak());
-                }
-                // Por último, por nombre
-                return t1.getTaldea().getIzena().compareTo(t2.getTaldea().getIzena());
-            }
-        });
-        
-        return klasifikazioa;
-    }
-    
-    // Método para resetear la clasificación para nueva temporada
-    public static void reset() {
-        inicializatuKlasifikazioa();
-    }
-    
-    // Método para inicializar desde partidos existentes de una temporada específica
-    public static void inicializatuPartiduetatik(String denboraldia) {
-        reset();
         List<Partidua> partiduak = Partidua.getPartiduakByDenboraldia(denboraldia);
+        if (partiduak == null) return;
+        
+        // Jokatuta dauden partiduen arabera klasifikazioa eguneratu
         for (Partidua partidua : partiduak) {
             if (partidua.isPartiduaJokatuta()) {
                 eguneratuPartiduarekin(partidua);
             }
         }
+    }
+    
+    /**
+     * Klasifikazioa eguneratu partidu batekin
+     * @param partidua Partidua, beharrezkoa jokatu izana
+     */
+    public static void eguneratuPartiduarekin(Partidua partidua) {
+        if (partidua == null || !partidua.isPartiduaJokatuta()) {
+            return;
+        }
+        
+        Taldeak etxekoTaldea = partidua.getEtxeko_taldea();
+        Taldeak kanpokoTaldea = partidua.getKanpoko_taldea();
+        
+        if (etxekoTaldea == null || kanpokoTaldea == null) {
+            return;
+        }
+        
+        TaldearenKlasifikazioa etxekoa = klasifikazioaMap.get(etxekoTaldea);
+        TaldearenKlasifikazioa kanpokoa = klasifikazioaMap.get(kanpokoTaldea);
+        
+        if (etxekoa == null || kanpokoa == null) {
+            return;
+        }
+        
+        // Partida jokatu kopurua handitu
+        etxekoa.gehitupartidaJokatua();
+        kanpokoa.gehitupartidaJokatua();
+        
+        // Set kopuruak eguneratu irabazi eta galdu moduan
+        int etxekoSets = partidua.getEtxekoTaldekoSetak();
+        int kanpokoSets = partidua.getKanpokoTaldekoSetak();
+        
+        etxekoa.gehituSetakIrabaziak(etxekoSets);
+        etxekoa.gehituSetakGalduak(kanpokoSets);
+        
+        kanpokoa.gehituSetakIrabaziak(kanpokoSets);
+        kanpokoa.gehituSetakGalduak(etxekoSets);
+        
+        // Irabazlea eta galdulea ezarri puntuazioak eguneratzeko
+        if (etxekoSets > kanpokoSets) {
+            etxekoa.gehitupartidaIrabazia();
+            kanpokoa.gehitupartidaGaldua();
+        } else {
+            kanpokoa.gehitupartidaIrabazia();
+            etxekoa.gehitupartidaGaldua();
+        }
+    }
+    
+    /**
+     * Ordenatutako klasifikazioa itzuli:
+     *  - Lehen puntuak,
+     *  - Ondoren seten diferentzia,
+     *  - Eta azkenik set irabaziak kontuan hartuta
+     */
+    public static List<TaldearenKlasifikazioa> getKlasifikazioaOrdenatua() {
+        List<TaldearenKlasifikazioa> ordenatua = new ArrayList<>(klasifikazioaMap.values());
+        
+        Collections.sort(ordenatua, new Comparator<TaldearenKlasifikazioa>() {
+            @Override
+            public int compare(TaldearenKlasifikazioa t1, TaldearenKlasifikazioa t2) {
+                int puntuakDiff = t2.getPuntuak() - t1.getPuntuak();
+                if (puntuakDiff != 0) {
+                    return puntuakDiff;
+                }
+                
+                int setDiffDiff = t2.getSetDiferentzia() - t1.getSetDiferentzia();
+                if (setDiffDiff != 0) {
+                    return setDiffDiff;
+                }
+                
+                return t2.getSetakIrabaziak() - t1.getSetakIrabaziak();
+            }
+        });
+        
+        return ordenatua;
+    }
+    
+    /**
+     * Talde zehatz baten klasifikazioa itzuli
+     * @param taldea Klasifikazioa nahi den taldea
+     * @return TaldearenKlasifikazioa objektua edo null
+     */
+    public static TaldearenKlasifikazioa getKlasifikazioaTaldea(Taldeak taldea) {
+        return klasifikazioaMap.get(taldea);
+    }
+    
+    /**
+     * Egiaztatu klasifikazioa hutsik dagoen
+     * @return true hutsik bada, bestela false
+     */
+    public static boolean isEmpty() {
+        return klasifikazioaMap.isEmpty();
     }
 }

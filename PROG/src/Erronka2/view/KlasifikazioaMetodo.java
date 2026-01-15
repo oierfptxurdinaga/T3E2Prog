@@ -6,40 +6,42 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 import Erronka2.model.Klasifikazioa;
 import Erronka2.model.Partidua;
 import Erronka2.model.TaldearenKlasifikazioa;
 
 /**
- * Klasifikazioa pestañaren interfazea - Ahora con lógica real
+ * Klasifikazioa fitxaren interfazea
  */
 public class KlasifikazioaMetodo {
 
-    private JPanel panel;
-    private Color urdina;
+    private JPanel panela;
     
     private JButton saioaAmaituBotoia;
     private JComboBox<String> denboraldiaCombo;
     private JTable klasifikazioaTaula;
-    private DefaultTableModel tableModel;
-    private JButton gordeBotoia;
-    private JButton amaituDenboraldiaBotoia; // Nuevo: botón para terminar temporada
+    private DefaultTableModel taulaModeloa;
+    private JButton gordeBotoia;      // Botón para guardar
+    private JButton kargatuBotoia;    // Botón para cargar
+    private JButton amaituDenboraldiaBotoia;
 
     public KlasifikazioaMetodo(Color urdina) {
-        this.urdina = urdina;
-        panel = new JPanel(null);
-        panel.setBackground(urdina);
+        panela = new JPanel(null);
+        panela.setBackground(urdina);
 
         // Izenburua
         JLabel titulua = new JLabel("KLASIFIKAZIOA");
         titulua.setForeground(Color.WHITE);
         titulua.setFont(new Font("Arial", Font.BOLD, 40));
         titulua.setBounds(320, 20, 400, 50);
-        panel.add(titulua);
+        panela.add(titulua);
 
-        // Combo box Denboraldia aukeratzeko
+        // Denboraldia aukeratzeko kombo kutxa
         denboraldiaCombo = new JComboBox<>();
         denboraldiaCombo.addItem("2022/2023");
         denboraldiaCombo.addItem("2023/2024");
@@ -49,115 +51,355 @@ public class KlasifikazioaMetodo {
         denboraldiaCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                kargatuKlasifikazioa();
+                try {
+                    kargatuKlasifikazioa();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panela, 
+                        "Errorea klasifikazioa kargatzerakoan: " + ex.getMessage(), 
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
             }
         });
-        panel.add(denboraldiaCombo);
+        panela.add(denboraldiaCombo);
         
-        // Botón para terminar temporada - SIEMPRE HABILITADO
+        // Denboraldia amaitzeko botoia
         amaituDenboraldiaBotoia = new JButton("Amaitu Denboraldia");
         amaituDenboraldiaBotoia.setFont(new Font("Arial", Font.BOLD, 16));
         amaituDenboraldiaBotoia.setBackground(Color.ORANGE);
         amaituDenboraldiaBotoia.setForeground(Color.BLACK);
-        amaituDenboraldiaBotoia.setBounds(600, 90, 200, 40);
+        amaituDenboraldiaBotoia.setBounds(350, 90, 200, 40);
         amaituDenboraldiaBotoia.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                amaituDenboraldia();
+                try {
+                    amaituDenboraldia();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panela, 
+                        "Errorea denboraldia amaitzerakoan: " + ex.getMessage(), 
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
             }
         });
-        panel.add(amaituDenboraldiaBotoia);
+        panela.add(amaituDenboraldiaBotoia);
 
-        // Taula - con modelo dinámico
-        String[] zutabeak = {"Posizioa", "Taldea", "PJ", "PG", "PP", "PTS", "SG", "SP", "SD"};
+        // Taula - modelo dinamikoarekin
+        String[] zutabeak = {"Posizioa", "Taldea", "PJ", "PG", "PP", "Puntuak", "SI", "SG", "SD"};
         
-        tableModel = new DefaultTableModel(zutabeak, 0) {
+        taulaModeloa = new DefaultTableModel(zutabeak, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(int errenkada, int zutabea) {
                 return false;
             }
         };
         
-        klasifikazioaTaula = new JTable(tableModel);
+        klasifikazioaTaula = new JTable(taulaModeloa);
         klasifikazioaTaula.setFont(new Font("Arial", Font.PLAIN, 14));
         klasifikazioaTaula.setFillsViewportHeight(true);
         klasifikazioaTaula.setShowGrid(true);
         klasifikazioaTaula.setGridColor(Color.LIGHT_GRAY);
 
-        // Zentratu testua zutabeetan
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        // Testua zentratu zutabeetan
+        DefaultTableCellRenderer zentratuErrendatzailea = new DefaultTableCellRenderer();
+        zentratuErrendatzailea.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < klasifikazioaTaula.getColumnCount(); i++) {
-            klasifikazioaTaula.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            klasifikazioaTaula.getColumnModel().getColumn(i).setCellRenderer(zentratuErrendatzailea);
         }
 
-        JScrollPane scrollPane = new JScrollPane(klasifikazioaTaula);
-        scrollPane.setBounds(100, 150, 700, 250);
-        panel.add(scrollPane);
+        JScrollPane korritzePanela = new JScrollPane(klasifikazioaTaula);
+        korritzePanela.setBounds(100, 150, 700, 250);
+        panela.add(korritzePanela);
 
-        // Boton Gorde
-        gordeBotoia = new JButton("Gorde");
-        gordeBotoia.setFont(new Font("Arial", Font.BOLD, 20));
-        gordeBotoia.setBackground(Color.WHITE);
-        gordeBotoia.setBounds(150, 420, 200, 50);
+        // ====================
+        // BOTOI NAGUSIAK (2 BOTOI BAKARRIK)
+        // ====================
+        
+        // 1. GORDE BOTOIA (Serializable formatuan)
+        gordeBotoia = new JButton("Gorde Klasifikazioa");
+        gordeBotoia.setFont(new Font("Arial", Font.BOLD, 16));
+        gordeBotoia.setBackground(new Color(0, 150, 0));
+        gordeBotoia.setForeground(Color.WHITE);
+        gordeBotoia.setBounds(200, 420, 200, 40);
         gordeBotoia.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(panel, "Klasifikazioa gordeta.", "Gorde", JOptionPane.INFORMATION_MESSAGE);
+                try {
+                    gordeKlasifikazioa();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panela, 
+                        "Errorea klasifikazioa gordetzerakoan: " + ex.getMessage(), 
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
             }
         });
-        panel.add(gordeBotoia);
-
-        // Boton Kargatu
-        JButton kargatuBotoia = new JButton("Kargatu");
-        kargatuBotoia.setFont(new Font("Arial", Font.BOLD, 20));
-        kargatuBotoia.setBackground(Color.WHITE);
-        kargatuBotoia.setBounds(450, 420, 200, 50);
+        panela.add(gordeBotoia);
+        
+        // 2. KARGATU BOTOIA (Serializable formatutik)
+        kargatuBotoia = new JButton("Kargatu Klasifikazioa");
+        kargatuBotoia.setFont(new Font("Arial", Font.BOLD, 16));
+        kargatuBotoia.setBackground(new Color(0, 100, 200));
+        kargatuBotoia.setForeground(Color.WHITE);
+        kargatuBotoia.setBounds(450, 420, 200, 40);
         kargatuBotoia.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                kargatuKlasifikazioa();
+                try {
+                    kargatuKlasifikazioaSerializable();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panela, 
+                        "Errorea klasifikazioa kargatzerakoan: " + ex.getMessage(), 
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
             }
         });
-        panel.add(kargatuBotoia);
+        panela.add(kargatuBotoia);
 
-        // Boton Saioa Amaitu
+        // Saioa Amaitu botoia
         saioaAmaituBotoia = new JButton("Saioa amaitu");
         saioaAmaituBotoia.setFont(new Font("Arial", Font.BOLD, 18));
         saioaAmaituBotoia.setBackground(Color.RED);
         saioaAmaituBotoia.setForeground(Color.WHITE);
         saioaAmaituBotoia.setBounds(700, 480, 170, 40);
         saioaAmaituBotoia.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(() -> new Login().setVisible(true));
-				JFrame frame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
-				frame.dispose();
-			}
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    SwingUtilities.invokeLater(() -> new Login().setVisible(true));
+                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
+                    frame.dispose();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panela, 
+                        "Errorea saioa amaitzerakoan: " + ex.getMessage(), 
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
 
-		});
-        panel.add(saioaAmaituBotoia);
+        });
+        panela.add(saioaAmaituBotoia);
         
-        // Cargar la clasificación al iniciar
-        kargatuKlasifikazioa();
+        // Klasifikazioa kargatu hastean
+        try {
+            kargatuKlasifikazioa();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(panela, 
+                "Errorea hasierako klasifikazioa kargatzerakoan: " + e.getMessage(), 
+                "Errorea", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
         
-        // Actualizar estado del botón de terminar temporada
+        // Denboraldia amaitzeko botoiaren egoera eguneratu
         eguneratuAmaituBotoia();
     }
     
     /**
-     * Método para terminar la temporada actual
+     * Klasifikazioa Serializable formatuan gorde
      */
-    private void amaituDenboraldia() {
+    private void gordeKlasifikazioa() throws Exception {
+        String denboraldia = (String) denboraldiaCombo.getSelectedItem();
+        if (denboraldia == null || denboraldia.isEmpty()) {
+            throw new IllegalArgumentException("Aukeratu denboraldi bat lehenik.");
+        }
+        
+        // Datuak prestatu serializatzeko
+        SerializableKlasifikazioaDatuak datuak = new SerializableKlasifikazioaDatuak();
+        datuak.setDenboraldia(denboraldia);
+        datuak.setEguna(new Date());
+        
+        // Taulako datuak biltzeko
+        List<String[]> datuZerrenda = new ArrayList<>();
+        for (int i = 0; i < taulaModeloa.getRowCount(); i++) {
+            String[] errenkada = new String[taulaModeloa.getColumnCount()];
+            for (int j = 0; j < taulaModeloa.getColumnCount(); j++) {
+                Object balioa = taulaModeloa.getValueAt(i, j);
+                errenkada[j] = (balioa != null) ? balioa.toString() : "";
+            }
+            datuZerrenda.add(errenkada);
+        }
+        datuak.setDatuZerrenda(datuZerrenda);
+        
+        // Klasifikazio osoa biltzeko (modeloko datuak)
+        List<TaldearenKlasifikazioa> klasifikazioaOsoa = Klasifikazioa.getKlasifikazioaOrdenatua();
+        datuak.setKlaseaEguneratua(false); // Gorde baino ez, ez eguneratu
+        
+        JFileChooser fitxategiAukeratzailea = new JFileChooser();
+        fitxategiAukeratzailea.setDialogTitle("Gorde klasifikazioa");
+        fitxategiAukeratzailea.setSelectedFile(new File("klasifikazioa_" + denboraldia + ".dat"));
+        
+        int erabiltzaileHautapena = fitxategiAukeratzailea.showSaveDialog(panela);
+        
+        if (erabiltzaileHautapena == JFileChooser.APPROVE_OPTION) {
+            File gordetzekoFitxategia = fitxategiAukeratzailea.getSelectedFile();
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(gordetzekoFitxategia))) {
+                out.writeObject(datuak);
+                JOptionPane.showMessageDialog(panela, 
+                    "Klasifikazioa gordeta: " + gordetzekoFitxategia.getAbsolutePath() + 
+                    "\nDenboraldia: " + denboraldia, 
+                    "Ondo", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                
+                System.out.println("KLASIFIKAZIOA GORDETA: " + gordetzekoFitxategia.getAbsolutePath());
+                
+            } catch (IOException ex) {
+                throw new IOException("Ezin izan da fitxategia gorde: " + ex.getMessage());
+            } catch (SecurityException ex) {
+                throw new SecurityException("Ez dago baimenik fitxategia gordetzeko: " + ex.getMessage());
+            }
+        }
+    }
+    
+    /**
+     * Klasifikazioa Serializable formatutik kargatu
+     */
+    private void kargatuKlasifikazioaSerializable() throws Exception {
+        JFileChooser fitxategiAukeratzailea = new JFileChooser();
+        fitxategiAukeratzailea.setDialogTitle("Kargatu klasifikazioa");
+        
+        int erabiltzaileHautapena = fitxategiAukeratzailea.showOpenDialog(panela);
+        
+        if (erabiltzaileHautapena == JFileChooser.APPROVE_OPTION) {
+            File kargatzekoFitxategia = fitxategiAukeratzailea.getSelectedFile();
+            
+            // Validar que el archivo existe y es legible
+            if (!kargatzekoFitxategia.exists()) {
+                throw new FileNotFoundException("Fitxategia ez da aurkitu: " + kargatzekoFitxategia.getAbsolutePath());
+            }
+            
+            if (!kargatzekoFitxategia.canRead()) {
+                throw new IOException("Ez dago baimenik fitxategia irakurtzeko: " + kargatzekoFitxategia.getAbsolutePath());
+            }
+            
+            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(kargatzekoFitxategia))) {
+                SerializableKlasifikazioaDatuak datuak = (SerializableKlasifikazioaDatuak) in.readObject();
+                
+                // Validar datos cargados
+                if (datuak == null) {
+                    throw new IllegalStateException("Kargatutako datuak nuluek dira.");
+                }
+                
+                // Denboraldia eguneratu
+                boolean denboraldiaAurkituta = false;
+                for (int i = 0; i < denboraldiaCombo.getItemCount(); i++) {
+                    if (denboraldiaCombo.getItemAt(i).equals(datuak.getDenboraldia())) {
+                        denboraldiaCombo.setSelectedIndex(i);
+                        denboraldiaAurkituta = true;
+                        break;
+                    }
+                }
+                
+                // Ez bada aurkitu, gehitu
+                if (!denboraldiaAurkituta) {
+                    denboraldiaCombo.addItem(datuak.getDenboraldia());
+                    denboraldiaCombo.setSelectedItem(datuak.getDenboraldia());
+                }
+                
+                // Validar lista de datos
+                if (datuak.getDatuZerrenda() == null) {
+                    throw new IllegalStateException("Kargatutako datu zerrenda nulua da.");
+                }
+                
+                // Taula garbitu eta datuak gehitu
+                taulaModeloa.setRowCount(0);
+                for (String[] errenkada : datuak.getDatuZerrenda()) {
+                    if (errenkada == null) {
+                        throw new IllegalStateException("Errenkada nulua aurkitu da.");
+                    }
+                    taulaModeloa.addRow(errenkada);
+                }
+                
+                JOptionPane.showMessageDialog(panela, 
+                    "Klasifikazioa kargatuta: " + kargatzekoFitxategia.getAbsolutePath() + 
+                    "\nDenboraldia: " + datuak.getDenboraldia() + 
+                    "\nGordetze data: " + datuak.getEguna(), 
+                    "Ondo", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                
+                System.out.println("KLASIFIKAZIOA KARGATUTA: " + kargatzekoFitxategia.getAbsolutePath());
+                
+            } catch (ClassNotFoundException ex) {
+                throw new ClassNotFoundException("Ez da aurkitu klasea fitxategian: " + ex.getMessage());
+            } catch (InvalidClassException ex) {
+                throw new InvalidClassException("Klasearen bertsioa ez da bateragarria: " + ex.getMessage());
+            } catch (StreamCorruptedException ex) {
+                throw new StreamCorruptedException("Fitxategia hondatuta dago: " + ex.getMessage());
+            } catch (OptionalDataException ex) {
+                throw new IOException("Datuak falta dira fitxategian: " + ex.getMessage());
+            } catch (EOFException ex) {
+                throw new EOFException("Fitxategia ustekabean amaitu da: " + ex.getMessage());
+            }
+        }
+    }
+    
+    /**
+     * Klasea Serializable datuak gordetzeko
+     */
+    private static class SerializableKlasifikazioaDatuak implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private String denboraldia;
+        private Date eguna;
+        private List<String[]> datuZerrenda;
+        private boolean klaseaEguneratua;
+        
+        // Constructor para validación
+        public SerializableKlasifikazioaDatuak() {
+            this.datuZerrenda = new ArrayList<>();
+        }
+        
+        public String getDenboraldia() {
+            return denboraldia;
+        }
+        
+        public void setDenboraldia(String denboraldia) {
+            if (denboraldia == null || denboraldia.trim().isEmpty()) {
+                throw new IllegalArgumentException("Denboraldia ezin da hutsik egon.");
+            }
+            this.denboraldia = denboraldia;
+        }
+        
+        public Date getEguna() {
+            return eguna;
+        }
+        
+        public void setEguna(Date eguna) {
+            if (eguna == null) {
+                throw new IllegalArgumentException("Data ezin da nulua izan.");
+            }
+            this.eguna = eguna;
+        }
+        
+        public List<String[]> getDatuZerrenda() {
+            return datuZerrenda;
+        }
+        
+        public void setDatuZerrenda(List<String[]> datuZerrenda) {
+            if (datuZerrenda == null) {
+                throw new IllegalArgumentException("Datu zerrenda ezin da nulua izan.");
+            }
+            this.datuZerrenda = datuZerrenda;
+        }
+        
+        public boolean isKlaseaEguneratua() {
+            return klaseaEguneratua;
+        }
+        
+        public void setKlaseaEguneratua(boolean klaseaEguneratua) {
+            this.klaseaEguneratua = klaseaEguneratua;
+        }
+    }
+    
+    /**
+     * Uneko denboraldia amaitzeko metodoa
+     */
+    private void amaituDenboraldia() throws Exception {
         String unekoDenboraldia = Partidua.getUnekoDenboraldia();
         
         if (unekoDenboraldia == null) {
-            JOptionPane.showMessageDialog(panel, "Ez dago denboraldirik hasita. Lehenik 'Hasi Denboraldia' sakatu partiduak pestañan.", 
-                    "Abisua", JOptionPane.WARNING_MESSAGE);
-            return;
+            throw new IllegalStateException("Ez dago denboraldirik hasita.");
         }
         
-        // Preguntar confirmación - SIN VALIDAR SI ESTÁ COMPLETA
-        int erantzuna = JOptionPane.showConfirmDialog(panel,
+        int erantzuna = JOptionPane.showConfirmDialog(panela,
             "Ziur al zaude " + unekoDenboraldia + " denboraldia amaitu nahi duzula?\n" +
             "Honek fitxaketak egitea ahalbidetuko du.",
             "Denboraldia amaitu",
@@ -167,92 +409,138 @@ public class KlasifikazioaMetodo {
             return;
         }
         
-        // Terminar temporada
-        Partidua.amaituDenboraldia();
-        
-        JOptionPane.showMessageDialog(panel, 
-            "Denboraldia amaitu da: " + unekoDenboraldia + "\n" +
-            "Orain fitxaketak egin ditzakezu edo denboraldi berri bat hasi.",
-            "Denboraldia Amaituta",
-            JOptionPane.INFORMATION_MESSAGE);
-        
-        // Actualizar interfaz
-        eguneratuAmaituBotoia();
+        try {
+            // Denboraldia amaitu
+            Partidua.amaituDenboraldia();
+            
+            // Konsolan erakutsi (log simulazioa)
+            System.out.println("DENBORALDIA AMAITUTA: " + unekoDenboraldia + " Erabiltzaileak");
+            
+            JOptionPane.showMessageDialog(panela, 
+                "Denboraldia amaitu da: " + unekoDenboraldia + "\n" +
+                "Orain fitxaketak egin ditzakezu edo denboraldi berri bat hasi.",
+                "Denboraldia Amaituta",
+                JOptionPane.INFORMATION_MESSAGE);
+            
+            // Interfazea eguneratu
+            eguneratuAmaituBotoia();
+            
+        } catch (Exception e) {
+            throw new Exception("Errorea denboraldia amaitzerakoan: " + e.getMessage(), e);
+        }
     }
-
     
     /**
-     * Actualizar estado del botón de terminar temporada
+     * Denboraldia amaitzeko botoiaren egoera eguneratu
      */
     private void eguneratuAmaituBotoia() {
-        String unekoDenboraldia = Partidua.getUnekoDenboraldia();
-        
-        if (unekoDenboraldia != null) {
-            // Hay temporada activa
-            if (Partidua.isDenboraldiaHasita()) {
-                amaituDenboraldiaBotoia.setText("Amaitu Denboraldia: " + unekoDenboraldia);
-                amaituDenboraldiaBotoia.setToolTipText("Denboraldia amaitu fitxaketak egiteko");
+        try {
+            String unekoDenboraldia = Partidua.getUnekoDenboraldia();
+            
+            if (unekoDenboraldia != null) {
+                // Denboraldi aktiboa dago
+                if (Partidua.isDenboraldiaHasita()) {
+                    amaituDenboraldiaBotoia.setText("Amaitu Denboraldia: " + unekoDenboraldia);
+                    amaituDenboraldiaBotoia.setToolTipText("Denboraldia amaitu fitxaketak egiteko");
+                } else {
+                    amaituDenboraldiaBotoia.setText("Denboraldia Amaituta: " + unekoDenboraldia);
+                    amaituDenboraldiaBotoia.setToolTipText("Denboraldia dagoeneko amaitu da");
+                }
             } else {
-                amaituDenboraldiaBotoia.setText("Denboraldia Amaituta: " + unekoDenboraldia);
-                amaituDenboraldiaBotoia.setToolTipText("Denboraldia dagoeneko amaitu da");
+                // Ez dago denboraldi aktiborik
+                amaituDenboraldiaBotoia.setText("Amaitu Denboraldia");
+                amaituDenboraldiaBotoia.setToolTipText("Ez dago denboraldirik hasita");
             }
-        } else {
-            // No hay temporada activa
+            
+            amaituDenboraldiaBotoia.setEnabled(true);
+        } catch (Exception e) {
+            // Si hay error, mantener botón en estado seguro
             amaituDenboraldiaBotoia.setText("Amaitu Denboraldia");
-            amaituDenboraldiaBotoia.setToolTipText("Ez dago denboraldirik hasita");
+            amaituDenboraldiaBotoia.setToolTipText("Errorea egoera kargatzerakoan");
+            amaituDenboraldiaBotoia.setEnabled(false);
+            System.err.println("Errorea amaitu botoia eguneratzerakoan: " + e.getMessage());
         }
-        
-        // EL BOTÓN ESTÁ SIEMPRE HABILITADO
-        amaituDenboraldiaBotoia.setEnabled(true);
     }
     
     /**
-     * Método para cargar la clasificación en la tabla
+     * Klasifikazioa taulan kargatzeko metodoa
      */
-    private void kargatuKlasifikazioa() {
-        tableModel.setRowCount(0); // Limpiar tabla
+    private void kargatuKlasifikazioa() throws Exception {
+        taulaModeloa.setRowCount(0);
         
         String denboraldiaHautatua = (String) denboraldiaCombo.getSelectedItem();
         
         if (denboraldiaHautatua == null || denboraldiaHautatua.isEmpty()) {
-            return;
+            throw new IllegalArgumentException("Aukeratu denboraldi bat.");
         }
         
-        // Inicializar clasificación desde partidos existentes de esta temporada
-        Klasifikazioa.inicializatuPartiduetatik(denboraldiaHautatua);
-        
-        List<TaldearenKlasifikazioa> klasifikazioa = Klasifikazioa.getKlasifikazioaOrdenatua();
-        
-        int posizioa = 1;
-        for (TaldearenKlasifikazioa tk : klasifikazioa) {
-            Object[] rowData = {
-                posizioa++,
-                tk.getTaldea().getIzena(),
-                tk.getPartidaJokatuak(),
-                tk.getPartidaIrabaziak(),
-                tk.getPartidaGalduak(),
-                tk.getPuntuak(),
-                tk.getSetakIrabaziak(),
-                tk.getSetakGalduak(),
-                tk.getSetDiferentzia()
-            };
-            tableModel.addRow(rowData);
+        try {
+            // Klasifikazioa hasieratu partiduetatik
+            Klasifikazioa.hasieratuPartiduetatik(denboraldiaHautatua);
+            
+            List<TaldearenKlasifikazioa> klasifikazioa = Klasifikazioa.getKlasifikazioaOrdenatua();
+            
+            // Validar clasificación
+            if (klasifikazioa == null) {
+                throw new IllegalStateException("Klasifikazioa nulua itzuli da.");
+            }
+            
+            int posizioa = 1;
+            for (TaldearenKlasifikazioa tk : klasifikazioa) {
+                if (tk == null) {
+                    throw new IllegalStateException("TaldearenKlasifikazioa nulua aurkitu da.");
+                }
+                
+                if (tk.getTaldea() == null) {
+                    throw new IllegalStateException("Talde nulua aurkitu da klasifikazioan.");
+                }
+                
+                Object[] errenkadaDatuak = {
+                    posizioa++,
+                    tk.getTaldea().getIzena(),
+                    tk.getPartidaJokatuak(),
+                    tk.getPartidaIrabaziak(),
+                    tk.getPartidaGalduak(),
+                    tk.getPuntuak(),
+                    tk.getSetakIrabaziak(),
+                    tk.getSetakGalduak(),
+                    tk.getSetDiferentzia()
+                };
+                taulaModeloa.addRow(errenkadaDatuak);
+            }
+            
+            // Errenkaden altuera doitzea
+            int errenkadaKopurua = taulaModeloa.getRowCount();
+            if (errenkadaKopurua > 0) {
+                int altueraEskura = 227;
+                int errenkadaAltuera = Math.max(30, altueraEskura / errenkadaKopurua);
+                klasifikazioaTaula.setRowHeight(errenkadaAltuera);
+            }
+            
+        } catch (Exception e) {
+            throw new Exception("Errorea klasifikazioa kargatzerakoan: " + e.getMessage(), e);
         }
-        
-        // Ajustar altura de filas
-        int numFilas = tableModel.getRowCount();
-        if (numFilas > 0) {
-            int altoDisponible = 227;
-            int alturaFila = Math.max(30, altoDisponible / numFilas);
-            klasifikazioaTaula.setRowHeight(alturaFila);
+    }
+    
+    /**
+     * Taula eguneratzeko metodoa publiko
+     */
+    public void eguneratuTaula() {
+        try {
+            kargatuKlasifikazioa();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(panela, 
+                "Errorea taula eguneratzerakoan: " + e.getMessage(), 
+                "Errorea", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
     /**
-     * Klasifikazioa panel hau itzultzen du
+     * Klasifikazioa panela hau itzultzen du
      * @return JPanel diseinua daukana
      */
-    public JPanel getPanel() {
-        return panel;
+    public JPanel getPanela() {
+        return panela;
     }
 }

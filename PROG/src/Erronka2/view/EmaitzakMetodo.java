@@ -9,109 +9,132 @@ import java.util.List;
 import Erronka2.model.Partidua;
 
 /**
- * Emaitzak pestañaren interfazea - AHORA CON LÓGICA REAL Y AUTOMÁTICA
+ * Emaitzak fitxaren interfazea - ORAIN LOGIKA ERREAL ETA AUTOMATIKOAREKIN
+ * 
+ * Swing erabiliz, erabiltzaileak denboraldia eta jardunaldia aukeratu ditzake
+ * eta hautatutako irizpideen arabera emaitzak taulan ikusi.
  */
 public class EmaitzakMetodo {
     
-    private JPanel panel;
-    private Color urdina;
-    private JComboBox<String> temporadaCombo;
-    private JComboBox<String> jornadaCombo;
-    private JTable taula;
-    private DefaultTableModel tableModel;
+    private JPanel panela;                      // Interfazeko panela nagusia
+    private Color urdina;                       // Atzeko plano kolorea
+    private JComboBox<String> denboraldiaCombo;// Denboraldia hautatzeko ComboBox
+    private JComboBox<String> jardunaldiaCombo;// Jardunaldia hautatzeko ComboBox
+    private JTable taula;                       // Emaitzak erakusteko taula
+    private DefaultTableModel taulaModeloa;    // Taularen datuen modelo dinamikoa
     
+    /**
+     * Eraikitzailea, panela eta osagai guztiak sortzen ditu
+     * @param urdina Kolore nagusia panela eta osagaietarako
+     */
     public EmaitzakMetodo(Color urdina) {
         this.urdina = urdina;
-        panel = new JPanel(null);
-        panel.setBackground(urdina);
+        panela = new JPanel(null);
+        panela.setBackground(urdina);
         
-        // ===============================
-        // TITULUA
-        // ===============================
+        // =================================
+        // TITULUA SORTU
+        // =================================
         JLabel titulua = new JLabel("EMAITZAK", SwingConstants.CENTER);
         titulua.setForeground(Color.WHITE);
         titulua.setFont(new Font("Arial", Font.BOLD, 32));
         titulua.setBounds(0, 40, 900, 40);
-        panel.add(titulua);
+        panela.add(titulua);
         
-        // ===============================
-        // DENBORALDIA (TEMPORADA)
-        // ===============================
-        JLabel temporadaLabel = new JLabel("Denboraldia:");
-        temporadaLabel.setForeground(Color.WHITE);
-        temporadaLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        temporadaLabel.setBounds(100, 120, 150, 30);
-        panel.add(temporadaLabel);
+        // =================================
+        // DENBORALDIA LABEL ETA COMBOBOX
+        // =================================
+        JLabel denboraldiaEtiketa = new JLabel("Denboraldia:");
+        denboraldiaEtiketa.setForeground(Color.WHITE);
+        denboraldiaEtiketa.setFont(new Font("Arial", Font.BOLD, 16));
+        denboraldiaEtiketa.setBounds(100, 120, 150, 30);
+        panela.add(denboraldiaEtiketa);
         
-        temporadaCombo = new JComboBox<>();
-        temporadaCombo.addItem("Guztiak"); // Opción para ver todos
-        temporadaCombo.addItem("2022/2023");
-        temporadaCombo.addItem("2023/2024");
-        temporadaCombo.addItem("2024/2025");
-        temporadaCombo.setBounds(100, 160, 180, 35);
-        temporadaCombo.addActionListener(e -> kargatuEmaitzakAutomatikoki());
-        panel.add(temporadaCombo);
+        denboraldiaCombo = new JComboBox<>();
+        denboraldiaCombo.addItem("Guztiak");  // Aukera guztien artean ikusteko
+        denboraldiaCombo.addItem("2022/2023");
+        denboraldiaCombo.addItem("2023/2024");
+        denboraldiaCombo.addItem("2024/2025");
+        denboraldiaCombo.setBounds(100, 160, 180, 35);
+        denboraldiaCombo.addActionListener(e -> {
+            try {
+                kargatuEmaitzakAutomatikoki();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(panela, 
+                    "Errorea emaitzak kargatzerakoan: " + ex.getMessage(), 
+                    "Errorea", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        });
+        panela.add(denboraldiaCombo);
         
-        // ===============================
-        // JARDUNALDIA (JORNADA)
-        // ===============================
-        JLabel jornadaLabel = new JLabel("Jardunaldia:");
-        jornadaLabel.setForeground(Color.WHITE);
-        jornadaLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        jornadaLabel.setBounds(300, 120, 150, 30);
-        panel.add(jornadaLabel);
+        // =================================
+        // JARDUNALDIA LABEL ETA COMBOBOX
+        // =================================
+        JLabel jardunaldiaEtiketa = new JLabel("Jardunaldia:");
+        jardunaldiaEtiketa.setForeground(Color.WHITE);
+        jardunaldiaEtiketa.setFont(new Font("Arial", Font.BOLD, 16));
+        jardunaldiaEtiketa.setBounds(300, 120, 150, 30);
+        panela.add(jardunaldiaEtiketa);
         
-        jornadaCombo = new JComboBox<>();
-        jornadaCombo.addItem("Guztiak"); // Opción para ver todos
+        jardunaldiaCombo = new JComboBox<>();
+        jardunaldiaCombo.addItem("Guztiak");  // Aukera guztien artean ikusteko
         for (int i = 1; i <= 10; i++) {
-            jornadaCombo.addItem("Jardunaldia " + i);
+            jardunaldiaCombo.addItem("Jardunaldia " + i);
         }
-        jornadaCombo.setBounds(300, 160, 180, 35);
-        jornadaCombo.addActionListener(e -> kargatuEmaitzakAutomatikoki());
-        panel.add(jornadaCombo);
+        jardunaldiaCombo.setBounds(300, 160, 180, 35);
+        jardunaldiaCombo.addActionListener(e -> {
+            try {
+                kargatuEmaitzakAutomatikoki();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(panela, 
+                    "Errorea emaitzak kargatzerakoan: " + ex.getMessage(), 
+                    "Errorea", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        });
+        panela.add(jardunaldiaCombo);
         
-        // ===============================
-        // TAULA (RESULTADOS) CON MODELO DINÁMICO
-        // ===============================
-        String[] columnas = {
+        // =================================
+        // TAULA (EMAITZAK) SORTU
+        // =================================
+        String[] zutabeak = {
             "Talde lokala",
-            "Golak lokala",
-            "Golak kanpokoa",
+            "Setak lokala",
+            "Setak kanpokoa",
             "Talde kanpokoa",
             "Jardunaldia",
             "Denboraldia"
         };
         
-        tableModel = new DefaultTableModel(columnas, 0) {
+        taulaModeloa = new DefaultTableModel(zutabeak, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Hacer la tabla no editable
+            public boolean isCellEditable(int errenkada, int zutabea) {
+                return false; // Ez da taula editagarria izango
             }
             
             @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 1 || columnIndex == 2) {
-                    return Integer.class; // Para que ordene bien los números
+            public Class<?> getColumnClass(int zutabeIndizea) {
+                if (zutabeIndizea == 1 || zutabeIndizea == 2) {
+                    return Integer.class; // Zenbakiak ondo ordenatzeko
                 }
                 return String.class;
             }
         };
         
-        taula = new JTable(tableModel);
+        taula = new JTable(taulaModeloa);
         taula.setRowHeight(35);
         taula.setFont(new Font("Arial", Font.PLAIN, 14));
         taula.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-        taula.setAutoCreateRowSorter(true); // Para poder ordenar
+        taula.setAutoCreateRowSorter(true); // Taula ordenagarria
         
-        JScrollPane scrollTaula = new JScrollPane(taula);
-        scrollTaula.setBounds(100, 230, 700, 220);
-        panel.add(scrollTaula);
+        JScrollPane korritzePanela = new JScrollPane(taula);
+        korritzePanela.setBounds(100, 230, 700, 220);
+        panela.add(korritzePanela);
         
-        // NOTA: Ya NO hay botón de "Freskatu emaitzak" - es automático
-        
-        // ===============================
-        // BOTOIA - SAIOA AMAITU
-        // ===============================
+        // =================================
+        // SAIOA AMAITZEKO BOTOIA
+        // =================================
         JButton saioaAmaituBotoia = new JButton("Saioa amaitu");
         saioaAmaituBotoia.setFont(new Font("Arial", Font.BOLD, 18));
         saioaAmaituBotoia.setBackground(Color.RED);
@@ -119,107 +142,170 @@ public class EmaitzakMetodo {
         saioaAmaituBotoia.setBounds(700, 480, 170, 40);
         saioaAmaituBotoia.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                SwingUtilities.invokeLater(() -> new Login().setVisible(true));
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
-                frame.dispose();
+                try {
+                    // Login leihoa berria ireki eta lehendik dagoena itxi
+                    SwingUtilities.invokeLater(() -> new Login().setVisible(true));
+                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
+                    frame.dispose();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panela, 
+                        "Errorea saioa amaitzerakoan: " + ex.getMessage(), 
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
             }
         });
-        panel.add(saioaAmaituBotoia);
+        panela.add(saioaAmaituBotoia);
         
-        // Cargar resultados iniciales
-        kargatuEmaitzakAutomatikoki();
+        // Hasieran, automatikoki emaitzak kargatu
+        try {
+            kargatuEmaitzakAutomatikoki();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(panela, 
+                "Errorea hasierako emaitzak kargatzerakoan: " + e.getMessage(), 
+                "Errorea", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
     
     /**
-     * Método para cargar los resultados en la tabla AUTOMÁTICAMENTE
+     * Emaitzak taulan automatikoki kargatzen ditu hautatutako denboraldia eta jardunaldia kontuan hartuta
+     * @throws Exception - Erroreak gertatzen direnean
      */
-    private void kargatuEmaitzakAutomatikoki() {
-        tableModel.setRowCount(0); // Limpiar tabla
+    private void kargatuEmaitzakAutomatikoki() throws Exception {
+        taulaModeloa.setRowCount(0); // Taula garbitu
         
-        String jardunaldiaHautatua = (String) jornadaCombo.getSelectedItem();
-        String denboraldiaHautatua = (String) temporadaCombo.getSelectedItem();
+        String jardunaldiaHautatua = (String) jardunaldiaCombo.getSelectedItem();
+        String denboraldiaHautatua = (String) denboraldiaCombo.getSelectedItem();
         
-        // Si se selecciona "Guztiak", filtrar como vacío
-        if ("Guztiak".equals(jardunaldiaHautatua)) {
-            jardunaldiaHautatua = "";
-        }
-        if ("Guztiak".equals(denboraldiaHautatua)) {
-            denboraldiaHautatua = "";
+        // Aukerak balidatu
+        if (jardunaldiaHautatua == null) {
+            throw new IllegalStateException("Jardunaldia hautatu gabe.");
         }
         
-        // Obtener partidos filtrados
-        List<Partidua> partiduak = Partidua.getPartiduakByDenboraldiaAndJardunaldia(
-            "Guztiak".equals(denboraldiaHautatua) ? "" : denboraldiaHautatua,
-            "Guztiak".equals(jardunaldiaHautatua) ? "" : jardunaldiaHautatua
-        );
+        if (denboraldiaHautatua == null) {
+            throw new IllegalStateException("Denboraldia hautatu gabe.");
+        }
+        
+        // Partiduak iragazi eta lortu
+        List<Partidua> partiduak;
+        try {
+            partiduak = Partidua.getPartiduakByDenboraldiaAndJardunaldia(
+                denboraldiaHautatua,
+                jardunaldiaHautatua
+            );
+            
+            if (partiduak == null) {
+                throw new IllegalStateException("Partidu zerrenda nulua itzuli da.");
+            }
+            
+        } catch (Exception e) {
+            throw new Exception("Errorea partiduak iragazterakoan: " + e.getMessage(), e);
+        }
         
         boolean partiduakAurkituta = false;
         
+        // Partidu bakoitza taulan gehitu
         for (Partidua partidua : partiduak) {
-            partiduakAurkituta = true;
-            
-            // Determinar el ganador para colorear
-            int etxekoPuntuak = partidua.getEtxekoTaldekoPuntuazioa();
-            int kanpokoPuntuak = partidua.getKanpokoTaldekoPuntuazioa();
-            
-            // Añadir a la tabla
-            Object[] rowData = {
-                partidua.getEtxeko_taldea().getIzena(),
-                etxekoPuntuak,
-                kanpokoPuntuak,
-                partidua.getKanpoko_taldea().getIzena(),
-                partidua.getJardunaldia(),
-                partidua.getDenboraldia()
-            };
-            
-            tableModel.addRow(rowData);
+            try {
+                partiduakAurkituta = true;
+                
+                // Partidu balidazioa
+                if (partidua == null) {
+                    throw new IllegalStateException("Partidu nulua aurkitu da.");
+                }
+                
+                if (partidua.getEtxeko_taldea() == null) {
+                    throw new IllegalStateException("Etxeko taldea nulua partiduan.");
+                }
+                
+                if (partidua.getKanpoko_taldea() == null) {
+                    throw new IllegalStateException("Kanpoko taldea nulua partiduan.");
+                }
+                
+                // Taularen errenkadan gehitu datuak
+                Object[] errenkadaDatuak = {
+                    partidua.getEtxeko_taldea().getIzena(),
+                    partidua.getEtxekoTaldekoSetak(),
+                    partidua.getKanpokoTaldekoSetak(),
+                    partidua.getKanpoko_taldea().getIzena(),
+                    partidua.getJardunaldia(),
+                    partidua.getDenboraldia()
+                };
+                
+                taulaModeloa.addRow(errenkadaDatuak);
+                
+            } catch (Exception e) {
+                throw new Exception("Errorea partidua prozesatzerakoan: " + e.getMessage(), e);
+            }
         }
         
-        // Si no hay resultados, mostrar mensaje
+        // Partidurik ez badago, mezu bat agertu taulan
         if (!partiduakAurkituta) {
-            Object[] noData = {
-                "Ez dago partidurik",
-                "-",
-                "-",
-                "Sartu partidu bat",
-                jardunaldiaHautatua.isEmpty() ? "Guztiak" : jardunaldiaHautatua,
-                denboraldiaHautatua.isEmpty() ? "Guztiak" : denboraldiaHautatua
-            };
-            tableModel.addRow(noData);
+            try {
+                Object[] daturikEz = {
+                    "Ez dago partidurik",
+                    "-",
+                    "-",
+                    "Sartu partidu bat",
+                    "Guztiak".equals(jardunaldiaHautatua) ? "Guztiak" : jardunaldiaHautatua,
+                    "Guztiak".equals(denboraldiaHautatua) ? "Guztiak" : denboraldiaHautatua
+                };
+                taulaModeloa.addRow(daturikEz);
+            } catch (Exception e) {
+                throw new Exception("Errorea mezua gehitzerakoan: " + e.getMessage(), e);
+            }
         }
     }
     
     /**
-     * Método público para actualizar la tabla desde otras clases
+     * Taula beste klaseetatik eguneratzeko metodo publikoa
      */
-    public void actualizarTabla() {
-        kargatuEmaitzakAutomatikoki();
+    public void eguneratuTaula() {
+        try {
+            kargatuEmaitzakAutomatikoki();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(panela, 
+                "Errorea taula eguneratzerakoan: " + e.getMessage(), 
+                "Errorea", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
     
     /**
-     * Emaitzak panel hau itzultzen du
+     * Emaitzak erakusten dituen JPanel hau itzultzen du
+     * @return JPanel panela nagusia
      */
-    public JPanel getPanel() {
-        return panel;
+    public JPanel getPanela() {
+        return panela;
     }
     
-    // Getters para los combobox
-    public JComboBox<String> getTemporadaCombo() {
-        return temporadaCombo;
+    // Denboraldia eta jardunaldia hautatzeko ComboBox-en getter-ak
+    public JComboBox<String> getDenboraldiaCombo() {
+        return denboraldiaCombo;
     }
     
-    public JComboBox<String> getJornadaCombo() {
-        return jornadaCombo;
+    public JComboBox<String> getJardunaldiaCombo() {
+        return jardunaldiaCombo;
     }
     
+    // Taularen getter-a
     public JTable getTaula() {
         return taula;
     }
     
     /**
-     * Método para notificar que se ha añadido un nuevo partido
+     * Partidu berri bat gehitu dela jakinarazteko metodoa,
+     * taula automatikoki eguneratzen du
      */
     public void notifyPartiduaGehitu() {
-        kargatuEmaitzakAutomatikoki();
+        try {
+            kargatuEmaitzakAutomatikoki();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(panela, 
+                "Errorea partidu berria jakinarazterakoan: " + e.getMessage(), 
+                "Errorea", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 }

@@ -3,79 +3,85 @@ package Erronka2.model;
 import java.util.Arrays;
 
 public class Denboraldia {
-	private int denboraldi_kod;
-	private String denboraldiaren_Izena;
-	private String hasiera_data;
-	private String amaiera_data;
-	private int jardunaldi_kopurua;
-	private Jardunaldia[] jardunaldiak;
+    // Denboraldiaren identifikatzaile eta oinarrizko informazioa gordetzen duen klasea
 
-	public Denboraldia() {
-	}
+    private int denboraldi_kod;            // Denboraldiaren kodea (ID)
+    private String denboraldiarenIzena;    // Denboraldiaren izena
+    private String hasieraData;            // Denboraldiaren hasiera data
+    private String amaieraData;            // Denboraldiaren amaiera data
+    private int jardunaldiKopurua;         // Denboraldiaren jardunaldien kopurua
+    private Jardunaldia[] jardunaldiak;    // Jardunaldiak array batean gordeta (denboraldiaren barruko jardunaldiak)
 
-	public Denboraldia(int denboraldi_kod, String denboraldiaren_Izena, String hasiera_data, String amaiera_data,
-			int jardunaldi_kopurua, Jardunaldia[] jardunaldiak) {
-		this.denboraldi_kod = denboraldi_kod;
-		this.denboraldiaren_Izena = denboraldiaren_Izena;
-		this.hasiera_data = hasiera_data;
-		this.amaiera_data = amaiera_data;
-		this.jardunaldi_kopurua = jardunaldi_kopurua;
-		this.jardunaldiak = jardunaldiak;
-	}
+    // Eraikitzaile hutsak, objektua hasieratzeko balio du
+    public Denboraldia() {
+    }
 
-	public int getDenboraldi_kod() {
-		return denboraldi_kod;
-	}
+    // Eraikitzaile parametrizatuak, datuak hasieratzeko erabiltzen da
+    public Denboraldia(int denboraldi_kod, String denboraldiarenIzena, String hasieraData, String amaieraData,
+            int jardunaldiKopurua, Jardunaldia[] jardunaldiak) {
+        this.denboraldi_kod = denboraldi_kod;
+        this.denboraldiarenIzena = denboraldiarenIzena;
+        this.hasieraData = hasieraData;
+        this.amaieraData = amaieraData;
+        this.jardunaldiKopurua = jardunaldiKopurua;
+        this.jardunaldiak = jardunaldiak;
+    }
 
-	public void setDenboraldi_kod(int denboraldi_kod) {
-		this.denboraldi_kod = denboraldi_kod;
-	}
+    // Getters eta setters — atributuak irakurtzeko eta aldatzeko metodoak
+    public int getDenboraldi_kod() {
+        return denboraldi_kod;
+    }
 
-	public String getDenboraldiaren_Izena() {
-		return denboraldiaren_Izena;
-	}
+    public void setDenboraldi_kod(int denboraldi_kod) {
+        this.denboraldi_kod = denboraldi_kod;
+    }
 
-	public void setDenboraldiaren_Izena(String denboraldiaren_Izena) {
-		this.denboraldiaren_Izena = denboraldiaren_Izena;
-	}
+    public String getDenboraldiarenIzena() {
+        return denboraldiarenIzena;
+    }
 
-	public String getHasiera_data() {
-		return hasiera_data;
-	}
+    public void setDenboraldiarenIzena(String denboraldiarenIzena) {
+        this.denboraldiarenIzena = denboraldiarenIzena;
+    }
 
-	public void setHasiera_data(String hasiera_data) {
-		this.hasiera_data = hasiera_data;
-	}
+    public String getHasieraData() {
+        return hasieraData;
+    }
 
-	public String getAmaiera_data() {
-		return amaiera_data;
-	}
+    public void setHasieraData(String hasieraData) {
+        this.hasieraData = hasieraData;
+    }
 
-	public void setAmaiera_data(String amaiera_data) {
-		this.amaiera_data = amaiera_data;
-	}
+    public String getAmaieraData() {
+        return amaieraData;
+    }
 
-	public int getJardunaldi_kopurua() {
-		return jardunaldi_kopurua;
-	}
+    public void setAmaieraData(String amaieraData) {
+        this.amaieraData = amaieraData;
+    }
 
-	public void setJardunaldi_kopurua(int jardunaldi_kopurua) {
-		this.jardunaldi_kopurua = jardunaldi_kopurua;
-	}
+    public int getJardunaldiKopurua() {
+        return jardunaldiKopurua;
+    }
 
-	public Jardunaldia[] getJardunaldiak() {
-		return jardunaldiak;
-	}
+    public void setJardunaldiKopurua(int jardunaldiKopurua) {
+        this.jardunaldiKopurua = jardunaldiKopurua;
+    }
 
-	public void setJardunaldiak(Jardunaldia[] jardunaldiak) {
-		this.jardunaldiak = jardunaldiak;
-	}
+    public Jardunaldia[] getJardunaldiak() {
+        return jardunaldiak;
+    }
 
-	@Override
-	public String toString() {
-		return "Denboraldia{" + "denboraldi_kod=" + denboraldi_kod + ", denboraldiaren_Izena='" + denboraldiaren_Izena
-				+ '\'' + ", hasiera_data='" + hasiera_data + '\'' + ", amaiera_data='" + amaiera_data + '\''
-				+ ", jardunaldi_kopurua=" + jardunaldi_kopurua + ", jardunaldiak=" + Arrays.toString(jardunaldiak)
-				+ '}';
-	}
+    public void setJardunaldiak(Jardunaldia[] jardunaldiak) {
+        this.jardunaldiak = jardunaldiak;
+    }
+
+    // Objektuaren informazioa testu moduan bueltatzen du, lagungarria debug eta inprimaketetarako
+    @Override
+    public String toString() {
+        return "Denboraldia{" + "denboraldi_kod=" + denboraldi_kod + ", denboraldiaren_Izena='" + denboraldiarenIzena
+                + '\'' + ", hasiera_data='" + hasieraData + '\'' + ", amaiera_data='" + amaieraData + '\''
+                + ", jardunaldi_kopurua=" + jardunaldiKopurua + ", jardunaldiak=" + Arrays.toString(jardunaldiak)
+                + '}';
+    }
 }

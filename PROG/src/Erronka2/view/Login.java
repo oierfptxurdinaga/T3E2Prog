@@ -12,144 +12,191 @@ import java.awt.event.ActionEvent;
 
 public class Login extends JFrame {
 
-	private ImageIcon logoIcon;
-	private Image logoImage;
-	private ImageIcon scaledLogoIcon;
-	private JLabel usuarioLabel;
-	private JLabel logoLabel;
-	private JLabel nombreLabel;
-	private JTextField erabiltzaileField;
-	private JLabel contrasenaLabel;
-	private JPasswordField pasahitzaField;
-	private JButton mostrarBtn;
-	private JButton sartuBtn;
-	private JButton salirBtn;
-	private JLabel lblFederazioa;
+    private static final long serialVersionUID = 1L;
+    private ImageIcon logoIkurra;
+    private Image logoIrudia;
+    private ImageIcon eskalatutakoLogoIkurra;
+    private JLabel erabiltzaileEtiketa;
+    private JLabel logoEtiketa;
+    private JLabel izenEtiketa;
+    private JTextField erabiltzaileEremua;
+    private JLabel pasahitzaEtiketa;
+    private JPasswordField pasahitzaEremua;
+    private JButton erakutsiBotoia;
+    private JButton sartuBotoia;
+    private JButton irtenBotoia;
+    private JLabel lblFederazioa;
 
-    // Frame-aren eraikitzailea
     /**
-     * 
+     * Frame-aren eraikitzailea
      */
     public Login() {
-        // Frame-aren izenburua
+        // El constructor debe ser lo primero
         super("Boleibol Federazioa - Saioa hasi");
-
-        // Frame-a konfigurazioa
-        setSize(500, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Leihoa erdian kokatu
-        getContentPane().setLayout(null); // Layout absolutua, posizio zehatzak ezartzeko
-        getContentPane().setBackground(new Color(60, 72, 191)); // Atzeko plano urdina
         
-        // LOGOA ETA IZENA
-        // Logoa kargatu proiektuaren 'images' karpetatik
-         logoIcon = new ImageIcon(
-        	    getClass().getResource("/Erronka2/images/Logo_sinFondo.png")
-        	);
-        // Eskalatu irudia JLabel-aren tamainara
-        logoImage = logoIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-        scaledLogoIcon = new ImageIcon(logoImage);
-
-        logoLabel = new JLabel(scaledLogoIcon);
-        logoLabel.setBounds(32, 36, 100, 100); // Posizioa eta tamaina
-        getContentPane().add(logoLabel);
-
-        // Federazioaren izena
-        nombreLabel = new JLabel("Boleibol ");
-        nombreLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        nombreLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        nombreLabel.setForeground(Color.WHITE);
-        nombreLabel.setBounds(160, 47, 208, 50);
-        getContentPane().add(nombreLabel);
-
-        // ERABILTZAILE ETA PASAHITZA KANPOAK
-        usuarioLabel = new JLabel("Erabiltzailea:");
-        usuarioLabel.setFont(new Font("Tahoma", Font.BOLD, 13));
-        usuarioLabel.setForeground(Color.WHITE);
-        usuarioLabel.setBounds(50, 160, 100, 25);
-        getContentPane().add(usuarioLabel);
-
-        erabiltzaileField = new JTextField();
-        erabiltzaileField.setBounds(160, 160, 200, 25);
-        getContentPane().add(erabiltzaileField);
-
-        contrasenaLabel = new JLabel("Pasahitza:");
-        contrasenaLabel.setFont(new Font("Tahoma", Font.BOLD, 13));
-        contrasenaLabel.setForeground(Color.WHITE);
-        contrasenaLabel.setBounds(50, 200, 100, 25);
-        getContentPane().add(contrasenaLabel);
-
-        pasahitzaField = new JPasswordField();
-        pasahitzaField.setBounds(160, 200, 200, 25);
-        pasahitzaField.setEchoChar('*'); // Asteriskoak erakutsi lehenetsita
-        getContentPane().add(pasahitzaField);
-
-        // Pasahitza erakutsi/ezkutatu botoi txikia
-        mostrarBtn = new JButton("👁");
-        mostrarBtn.setBackground(new Color(255, 255, 255));
-        mostrarBtn.setBounds(370, 200, 56, 25);
-        mostrarBtn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                // Sakatuta mantentzen den bitartean, pasahitza erakusten du
-                pasahitzaField.setEchoChar((char) 0);
-                mostrarBtn.setText("-");
-            }
+        try {
+            // Frame-a konfigurazioa
+            setSize(500, 400);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo(null); // Leihoa erdian kokatu
+            getContentPane().setLayout(null); // Layout absolutua, posizio zehatzak ezartzeko
+            getContentPane().setBackground(new Color(60, 72, 191)); // Atzeko plano urdina
             
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                // Botoia sakatzeari uzten denean, pasahitza ezkutatuko da
-                pasahitzaField.setEchoChar('*');
-                mostrarBtn.setText("👁");
+            // LOGOA ETA IZENA
+            // Logoa kargatu proiektuak 'images' karpetatik
+            try {
+                logoIkurra = new ImageIcon(
+                    getClass().getResource("/Erronka2/images/Logo_sinFondo.png")
+                );
+                
+                if (logoIkurra == null) {
+                    throw new Exception("Ezin izan da logoa kargatu. Path okerra: /Erronka2/images/Logo_sinFondo.png");
+                }
+                
+                // Eskalatu irudia JLabel-aren tamainara
+                logoIrudia = logoIkurra.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                eskalatutakoLogoIkurra = new ImageIcon(logoIrudia);
+
+                logoEtiketa = new JLabel(eskalatutakoLogoIkurra);
+                logoEtiketa.setBounds(32, 36, 100, 100); // Posizioa eta tamaina
+                getContentPane().add(logoEtiketa);
+                
+            } catch (Exception e) {
+                // Si falla la carga de logo, usar texto alternativo
+                System.err.println("Errorea logo kargatzerakoan: " + e.getMessage());
+                logoEtiketa = new JLabel("[LOGOA]");
+                logoEtiketa.setForeground(Color.WHITE);
+                logoEtiketa.setFont(new Font("Arial", Font.BOLD, 14));
+                logoEtiketa.setBounds(32, 36, 100, 100);
+                getContentPane().add(logoEtiketa);
             }
-        });
-        getContentPane().add(mostrarBtn);
-       
-	     // SARTU BOTOIA
-	     sartuBtn = new JButton("Sartu");
-	     sartuBtn.setFont(new Font("Tahoma", Font.BOLD, 12));
-	     sartuBtn.setBackground(new Color(255, 255, 255));
-	     sartuBtn.addActionListener(new ActionListener() {
-	    	    public void actionPerformed(ActionEvent e) {
-	    	        String erabiltzailea = erabiltzaileField.getText().trim();
-	    	        String pasahitza = new String(pasahitzaField.getPassword()).trim();
 
-	    	        //Begiratzen du ea erabiltzaile eta pasahitza beteta dagoen.
-	    	        if (erabiltzailea.isEmpty() || pasahitza.isEmpty()) {
-	    	            JOptionPane.showMessageDialog(Login.this, "Mesedez, bete erabiltzailea eta pasahitza", "Errorea", JOptionPane.ERROR_MESSAGE);
-	    	        } else {
-	    	            // Autenticación con Rola
-	    	            Rola rol = Rola.Egiaztatu(erabiltzailea, pasahitza);
+            // Federazioaren izena
+            izenEtiketa = new JLabel("Boleibol ");
+            izenEtiketa.setHorizontalAlignment(SwingConstants.CENTER);
+            izenEtiketa.setFont(new Font("Arial", Font.BOLD, 30));
+            izenEtiketa.setForeground(Color.WHITE);
+            izenEtiketa.setBounds(160, 47, 208, 50);
+            getContentPane().add(izenEtiketa);
 
-	    	            if (rol != null) {
-	    	                // Erabiltzailea ondo sartuta main orrira sartu eta ongi etorria emango du.
-	    	                JOptionPane.showMessageDialog(Login.this, "Ongi etorri, " + erabiltzailea + " !!");
-	    	                SwingUtilities.invokeLater(() -> new Main().setVisible(true));
-	    	                dispose(); // Login lehioa itxi
-	    	            } else {
-	    	                // Sartzerakoan ez badaude existitzen 
-	    	                JOptionPane.showMessageDialog(Login.this, "Erabiltzailea edo pasahitza okerra", "Errorea", JOptionPane.ERROR_MESSAGE);
-	    	            }
-	    	        }
-	    	    }
-	    	});
+            // ERABILTZAILE ETA PASAHITZA KANPOAK
+            erabiltzaileEtiketa = new JLabel("Erabiltzailea:");
+            erabiltzaileEtiketa.setFont(new Font("Tahoma", Font.BOLD, 13));
+            erabiltzaileEtiketa.setForeground(Color.WHITE);
+            erabiltzaileEtiketa.setBounds(50, 160, 100, 25);
+            getContentPane().add(erabiltzaileEtiketa);
 
-	     sartuBtn.setBounds(196, 284, 100, 25); // Kokapena
-	     getContentPane().add(sartuBtn);
+            erabiltzaileEremua = new JTextField();
+            erabiltzaileEremua.setBounds(160, 160, 200, 25);
+            getContentPane().add(erabiltzaileEremua);
 
+            pasahitzaEtiketa = new JLabel("Pasahitza:");
+            pasahitzaEtiketa.setFont(new Font("Tahoma", Font.BOLD, 13));
+            pasahitzaEtiketa.setForeground(Color.WHITE);
+            pasahitzaEtiketa.setBounds(50, 200, 100, 25);
+            getContentPane().add(pasahitzaEtiketa);
 
+            pasahitzaEremua = new JPasswordField();
+            pasahitzaEremua.setBounds(160, 200, 200, 25);
+            pasahitzaEremua.setEchoChar('*'); // Asteriskoak erakutsi lehenetsita
+            getContentPane().add(pasahitzaEremua);
+
+            // Pasahitza erakutsi/ezkutatu botoi txikia
+            erakutsiBotoia = new JButton("👁");
+            erakutsiBotoia.setBackground(new Color(255, 255, 255));
+            erakutsiBotoia.setBounds(370, 200, 56, 25);
+            erakutsiBotoia.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    try {
+                        // Sakatuta mantentzen den bitartean, pasahitza erakusten du
+                        pasahitzaEremua.setEchoChar((char) 0);
+                        erakutsiBotoia.setText("-");
+                    } catch (Exception ex) {
+                        System.err.println("Errorea pasahitza erakusteko: " + ex.getMessage());
+                    }
+                }
+                
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    try {
+                        // Botoia sakatzeari uzten denean, pasahitza ezkutatuko da
+                        pasahitzaEremua.setEchoChar('*');
+                        erakutsiBotoia.setText("👁");
+                    } catch (Exception ex) {
+                        System.err.println("Errorea pasahitza ezkutatzeko: " + ex.getMessage());
+                    }
+                }
+            });
+            getContentPane().add(erakutsiBotoia);
+           
+         // SARTU BOTOIA
+         sartuBotoia = new JButton("Sartu");
+         sartuBotoia.setFont(new Font("Tahoma", Font.BOLD, 12));
+         sartuBotoia.setBackground(new Color(255, 255, 255));
+         sartuBotoia.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        String erabiltzailea = erabiltzaileEremua.getText().trim();
+                        String pasahitza = new String(pasahitzaEremua.getPassword()).trim();
+
+                        //Begiratzen du ea erabiltzaile eta pasahitza beteta dagoen.
+                        if (erabiltzailea.isEmpty() || pasahitza.isEmpty()) {
+                            throw new IllegalArgumentException("Mesedez, bete erabiltzailea eta pasahitza");
+                        }
+
+                        // Autentikazioa Rola-rekin
+                        Rola rol = Rola.Egiaztatu(erabiltzailea, pasahitza);
+
+                        if (rol != null) {
+                            // Erabiltzailea ondo sartuta main orrira sartu eta ongi etorria emango du.
+                            JOptionPane.showMessageDialog(Login.this, "Ongi etorri, " + erabiltzailea + " !!");
+                            SwingUtilities.invokeLater(() -> new Main().setVisible(true));
+                            dispose(); // Login lehioa itxi
+                        } else {
+                            // Sartzerakoan ez badaude existitzen 
+                            throw new SecurityException("Erabiltzailea edo pasahitza okerra");
+                        }
+                    } catch (IllegalArgumentException ex) {
+                        JOptionPane.showMessageDialog(Login.this, ex.getMessage(), "Abisua", 
+                            JOptionPane.WARNING_MESSAGE);
+                    } catch (SecurityException ex) {
+                        JOptionPane.showMessageDialog(Login.this, ex.getMessage(), "Errorea", 
+                            JOptionPane.ERROR_MESSAGE);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(Login.this, 
+                            "Errorea sistemara sartzerakoan: " + ex.getMessage(), 
+                            "Errorea", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                    }
+                }
+            });
+
+         sartuBotoia.setBounds(196, 284, 100, 25); // Kokapena
+         getContentPane().add(sartuBotoia);
 
         // IRTEERAKO BOTOIA sakatzerakoan, programatik irteteko da
-        salirBtn = new JButton("Irten");
-        salirBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		System.exit(0);
-        	}
+        irtenBotoia = new JButton("Irten");
+        irtenBotoia.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    System.exit(0);
+                } catch (SecurityException ex) {
+                    JOptionPane.showMessageDialog(Login.this, 
+                        "Ez dago baimenik aplikazioa ixteko: " + ex.getMessage(),
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(Login.this, 
+                        "Errorea aplikazioa ixteko: " + ex.getMessage(),
+                        "Errorea", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
         });
-        salirBtn.setBackground(Color.RED);
-        salirBtn.setForeground(Color.WHITE);
-        salirBtn.setBounds(400, 10, 80, 30);
-        getContentPane().add(salirBtn);
+        irtenBotoia.setBackground(Color.RED);
+        irtenBotoia.setForeground(Color.WHITE);
+        irtenBotoia.setBounds(400, 10, 80, 30);
+        getContentPane().add(irtenBotoia);
         
         lblFederazioa = new JLabel("\nFederazioa");
         lblFederazioa.setHorizontalAlignment(SwingConstants.CENTER);
@@ -160,10 +207,31 @@ public class Login extends JFrame {
 
         // Frame-a bistaratzea
         setVisible(true);
+            
+        } catch (HeadlessException e) {
+            System.err.println("Errorea interfazea sortzerakoan (Headless): " + e.getMessage());
+            JOptionPane.showMessageDialog(null, 
+                "Errorea interfazea sortzerakoan. Ziurtatu sistema leihoak onartzen dituela.", 
+                "Errorea Larria", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            System.err.println("Errorea Login frame-a sortzerakoan: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, 
+                "Errorea aplikazioa hasieratzerakoan: " + e.getMessage(), 
+                "Errorea Larria", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void main(String[] args) {
-        // Frame baten instantzia sortu
-        new Login();
+        try {
+            // Frame baten instantzia sortu
+            SwingUtilities.invokeLater(() -> new Login());
+        } catch (Exception e) {
+            System.err.println("Errorea aplikazioa abiarazterakoan: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, 
+                "Errorea aplikazioa abiarazterakoan: " + e.getMessage(), 
+                "Errorea Larria", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

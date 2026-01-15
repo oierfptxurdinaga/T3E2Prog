@@ -1,15 +1,18 @@
 package Erronka2.model;
 
 public class TaldearenKlasifikazioa {
-    private Taldeak taldea;
-    private int partidaJokatuak;
-    private int partidaIrabaziak;
-    private int partidaGalduak;
-    private int puntuak;
-    private int setakIrabaziak; // Nuevo: sets ganados
-    private int setakGalduak;   // Nuevo: sets perdidos
-    private int setDiferentzia; // Nuevo: diferencia de sets
+    // Talde baten liga edo denboraldi bateko klasifikazio informazioa gordetzeko klasea
+
+    private Taldeak taldea;             // Taldearen informazioa
+    private int partidaJokatuak;         // Jokatu diren partiduen kopurua
+    private int partidaIrabaziak;        // Irabazitako partiduen kopurua
+    private int partidaGalduak;          // Galdu diren partiduen kopurua
+    private int puntuak;                 // Taldeak lortutako puntu kopurua
+    private int setakIrabaziak;          // Irabazitako set kopurua
+    private int setakGalduak;            // Galdu diren set kopurua
+    private int setDiferentzia;          // Seten arteko diferentzia (irabazitakoak - galduak)
     
+    // Eraikitzailea, taldearekin hasi eta denak 0 hasieratzen ditu
     public TaldearenKlasifikazioa(Taldeak taldea) {
         this.taldea = taldea;
         this.partidaJokatuak = 0;
@@ -21,7 +24,7 @@ public class TaldearenKlasifikazioa {
         this.setDiferentzia = 0;
     }
     
-    // Getters y setters
+    // Getters eta setters atributuetarako
     public Taldeak getTaldea() {
         return taldea;
     }
@@ -66,6 +69,7 @@ public class TaldearenKlasifikazioa {
         return setakIrabaziak;
     }
     
+    // Setak irabaziak aldatzean setDiferentzia eguneratzen da
     public void setSetakIrabaziak(int setakIrabaziak) {
         this.setakIrabaziak = setakIrabaziak;
         this.setDiferentzia = this.setakIrabaziak - this.setakGalduak;
@@ -75,6 +79,7 @@ public class TaldearenKlasifikazioa {
         return setakGalduak;
     }
     
+    // Setak galduak aldatzean setDiferentzia eguneratzen da
     public void setSetakGalduak(int setakGalduak) {
         this.setakGalduak = setakGalduak;
         this.setDiferentzia = this.setakIrabaziak - this.setakGalduak;
@@ -84,27 +89,30 @@ public class TaldearenKlasifikazioa {
         return setDiferentzia;
     }
     
-    // Métodos para incrementar
+    // Partida jokatu bat gehitzeko metodoa
     public void gehitupartidaJokatua() {
         partidaJokatuak++;
     }
     
+    // Irabazitako partida bat gehitzeko metodoa, puntuak ere handitzen ditu
     public void gehitupartidaIrabazia() {
         partidaIrabaziak++;
-        puntuak += 3; // 3 puntos por victoria
+        puntuak += 3; // Irabazteagatik 3 puntu ematen dira
     }
     
+    // Galduko partida bat gehitzeko metodoa, punturik gehitu gabe
     public void gehitupartidaGaldua() {
         partidaGalduak++;
-        // No se suman puntos
+        // Ez dira punturik gehitzen
     }
     
-    // Nuevos métodos para sets
+    // Set irabazi kopurua handitzeko metodoa, diferentzia ere eguneratzen du
     public void gehituSetakIrabaziak(int setak) {
         this.setakIrabaziak += setak;
         this.setDiferentzia = this.setakIrabaziak - this.setakGalduak;
     }
     
+    // Set galdu kopurua handitzeko metodoa, diferentzia ere eguneratzen du
     public void gehituSetakGalduak(int setak) {
         this.setakGalduak += setak;
         this.setDiferentzia = this.setakIrabaziak - this.setakGalduak;

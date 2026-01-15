@@ -2,72 +2,78 @@ package Erronka2.model;
 
 import java.util.Arrays;
 
-public class Jardunaldia  {
-    private int jardunaldi_kod;
-    private String hasiera_data;
-    private String amaiera_data;
-    private int partidu_kopurua;
-    private Partidua[] partiduak;
-    
+public class Jardunaldia {
+    // Liga edo txapelketa bateko jardunaldi baten datuak gordetzeko klasea
+
+    private int jardunaldi_kod;       // Jardunaldiaren identifikatzaile (kodea)
+    private String hasieraData;       // Jardunaldiaren hasiera data
+    private String amaieraData;       // Jardunaldiaren amaiera data
+    private int partiduKopurua;       // Jardunaldian jokatutako partidu kopurua
+    private Partidua[] partiduak;     // Jardunaldiko partiduak array batean gordeta
+
+    // Eraikitzaile hutsak, objektua hasieratu gabe sortzeko
     public Jardunaldia() {
     }
-    
-    public Jardunaldia(int jardunaldi_kod, String hasiera_data, String amaiera_data, 
-                       int partidu_kopurua, Partidua[] partiduak) {
+
+    // Eraikitzaile parametrizatuak, datu guztiak aldi berean ezartzeko
+    public Jardunaldia(int jardunaldi_kod, String hasieraData, String amaieraData,
+                       int partiduKopurua, Partidua[] partiduak) {
         this.jardunaldi_kod = jardunaldi_kod;
-        this.hasiera_data = hasiera_data;
-        this.amaiera_data = amaiera_data;
-        this.partidu_kopurua = partidu_kopurua;
+        this.hasieraData = hasieraData;
+        this.amaieraData = amaieraData;
+        this.partiduKopurua = partiduKopurua;
         this.partiduak = partiduak;
     }
-    
+
+    // Getters eta setters, atributuak irakurtzeko eta aldatzeko
     public int getJardunaldi_kod() {
         return jardunaldi_kod;
     }
-    
+
     public void setJardunaldi_kod(int jardunaldi_kod) {
         this.jardunaldi_kod = jardunaldi_kod;
     }
-    
-    public String getHasiera_data() {
-        return hasiera_data;
+
+    public String getHasieraData() {
+        return hasieraData;
     }
-    
-    public void setHasiera_data(String hasiera_data) {
-        this.hasiera_data = hasiera_data;
+
+    public void setHasieraData(String hasieraData) {
+        this.hasieraData = hasieraData;
     }
-    
-    public String getAmaiera_data() {
-        return amaiera_data;
+
+    public String getAmaieraData() {
+        return amaieraData;
     }
-    
-    public void setAmaiera_data(String amaiera_data) {
-        this.amaiera_data = amaiera_data;
+
+    public void setAmaieraData(String amaieraData) {
+        this.amaieraData = amaieraData;
     }
-    
-    public int getPartidu_kopurua() {
-        return partidu_kopurua;
+
+    public int getPartiduKopurua() {
+        return partiduKopurua;
     }
-    
-    public void setPartidu_kopurua(int partidu_kopurua) {
-        this.partidu_kopurua = partidu_kopurua;
+
+    public void setPartiduKopurua(int partiduKopurua) {
+        this.partiduKopurua = partiduKopurua;
     }
-    
+
     public Partidua[] getPartiduak() {
         return partiduak;
     }
-    
+
     public void setPartiduak(Partidua[] partiduak) {
         this.partiduak = partiduak;
     }
-    
+
+    // Objektuaren datuak string moduan itzultzen ditu, lagungarria debug edo inprimaketetan
     @Override
     public String toString() {
         return "Jardunaldia{" +
                 "jardunaldi_kod=" + jardunaldi_kod +
-                ", hasiera_data='" + hasiera_data + '\'' +
-                ", amaiera_data='" + amaiera_data + '\'' +
-                ", partidu_kopurua=" + partidu_kopurua +
+                ", hasiera_data='" + hasieraData + '\'' +
+                ", amaiera_data='" + amaieraData + '\'' +
+                ", partidu_kopurua=" + partiduKopurua +
                 ", partiduak=" + Arrays.toString(partiduak) +
                 '}';
     }
