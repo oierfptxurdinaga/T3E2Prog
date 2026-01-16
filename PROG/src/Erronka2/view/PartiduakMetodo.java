@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * Partiduak fitxako interfazea eta edukia kudeatzen ditu.
+ * Hemen erabiltzaileak partida berriak sartu, denboraldia hasi eta saioa amaitu dezake.
  */
 public class PartiduakMetodo {
 
@@ -45,7 +46,10 @@ public class PartiduakMetodo {
     private Main leihoNagusia;
 
     /**
-     * Eraikitzailea Main erreferentziarekin
+     * Eraikitzailea Main erreferentziarekin.
+     * 
+     * @param kolorea Panelaren atzeko kolorea
+     * @param leihoNagusia Main klasearen erreferentzia, fitxak eguneratzeko
      */
     public PartiduakMetodo(Color kolorea, Main leihoNagusia) {
         this.leihoNagusia = leihoNagusia;
@@ -205,6 +209,11 @@ public class PartiduakMetodo {
                 }
             }
             
+            /**
+             * Partidua sartu eta balidazio guztiak egin.
+             * 
+             * @throws Exception balidazio errore edo sartze akatsak.
+             */
             private void procesarPartidua() throws Exception {
                 // Egiaztatu denboraldi aktiborik dagoen
                 if (Partidua.getUnekoDenboraldia() == null) {
@@ -389,14 +398,16 @@ public class PartiduakMetodo {
     }
     
     /**
-     * Eraikitzailea Main erreferentziarik gabe (bateragarritasunerako)
+     * Eraikitzailea Main erreferentziarik gabe (bateragarritasunerako).
+     * @param kolorea Panelaren atzeko kolorea
      */
     public PartiduakMetodo(Color kolorea) {
         this(kolorea, null);
     }
     
     /**
-     * Denboraldi berri bat hasteko metodoa
+     * Denboraldi berri bat hasteko metodoa.
+     * @throws Exception denboraldi berria hastean erroreak agertzen badira.
      */
     private void hasiDenboraldiaBerria() throws Exception {
         // Hautatutako denboraldia lortu
@@ -434,7 +445,8 @@ public class PartiduakMetodo {
     }
     
     /**
-     * Interfazea eguneratu denboraldiaren egoeraren arabera
+     * Interfazea eguneratu denboraldiaren egoeraren arabera.
+     * Kontrolak gaitzen edo desgaitzen ditu denboraldia hasi edo amaitu den arabera.
      */
     private void eguneratuInterfazea() {
         try {
@@ -479,7 +491,7 @@ public class PartiduakMetodo {
     }
 
     /**
-     * Partiduak panel nagusia itzultzen du
+     * Partiduak panel nagusia itzultzen du.
      * 
      * @return JPanel Partiduak fitxako edukia duen panela
      */

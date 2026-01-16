@@ -1,18 +1,38 @@
 package Erronka2.model;
 
+/**
+ * Talde baten liga edo denboraldi bateko klasifikazio informazioa gordetzeko klasea.
+ * Taldearen partidu jokatuak, irabaziak, galduak, puntuak eta set kopuruak mantentzen ditu.
+ */
 public class TaldearenKlasifikazioa {
-    // Talde baten liga edo denboraldi bateko klasifikazio informazioa gordetzeko klasea
+    /** Taldearen informazioa */
+    private Taldeak taldea;
 
-    private Taldeak taldea;             // Taldearen informazioa
-    private int partidaJokatuak;         // Jokatu diren partiduen kopurua
-    private int partidaIrabaziak;        // Irabazitako partiduen kopurua
-    private int partidaGalduak;          // Galdu diren partiduen kopurua
-    private int puntuak;                 // Taldeak lortutako puntu kopurua
-    private int setakIrabaziak;          // Irabazitako set kopurua
-    private int setakGalduak;            // Galdu diren set kopurua
-    private int setDiferentzia;          // Seten arteko diferentzia (irabazitakoak - galduak)
-    
-    // Eraikitzailea, taldearekin hasi eta denak 0 hasieratzen ditu
+    /** Jokatu diren partiduen kopurua */
+    private int partidaJokatuak;
+
+    /** Irabazitako partiduen kopurua */
+    private int partidaIrabaziak;
+
+    /** Galdu diren partiduen kopurua */
+    private int partidaGalduak;
+
+    /** Taldeak lortutako puntu kopurua */
+    private int puntuak;
+
+    /** Irabazitako set kopurua */
+    private int setakIrabaziak;
+
+    /** Galdu diren set kopurua */
+    private int setakGalduak;
+
+    /** Seten arteko diferentzia (irabazitakoak - galduak) */
+    private int setDiferentzia;
+
+    /**
+     * Eraikitzailea, taldearekin hasi eta puntuazio guztiak 0 hasieratzen ditu.
+     * @param taldea Taldearen informazioa
+     */
     public TaldearenKlasifikazioa(Taldeak taldea) {
         this.taldea = taldea;
         this.partidaJokatuak = 0;
@@ -23,96 +43,126 @@ public class TaldearenKlasifikazioa {
         this.setakGalduak = 0;
         this.setDiferentzia = 0;
     }
-    
-    // Getters eta setters atributuetarako
+
+    /** @return Taldearen informazioa */
     public Taldeak getTaldea() {
         return taldea;
     }
-    
+
+    /** @param taldea Taldearen informazioa ezartzeko */
     public void setTaldea(Taldeak taldea) {
         this.taldea = taldea;
     }
-    
+
+    /** @return Jokatu diren partiduen kopurua */
     public int getPartidaJokatuak() {
         return partidaJokatuak;
     }
-    
+
+    /** @param partidaJokatuak Jokatu diren partiduen kopurua ezartzeko */
     public void setPartidaJokatuak(int partidaJokatuak) {
         this.partidaJokatuak = partidaJokatuak;
     }
-    
+
+    /** @return Irabazitako partiduen kopurua */
     public int getPartidaIrabaziak() {
         return partidaIrabaziak;
     }
-    
+
+    /** @param partidaIrabaziak Irabazitako partiduen kopurua ezartzeko */
     public void setPartidaIrabaziak(int partidaIrabaziak) {
         this.partidaIrabaziak = partidaIrabaziak;
     }
-    
+
+    /** @return Galdu diren partiduen kopurua */
     public int getPartidaGalduak() {
         return partidaGalduak;
     }
-    
+
+    /** @param partidaGalduak Galdu diren partiduen kopurua ezartzeko */
     public void setPartidaGalduak(int partidaGalduak) {
         this.partidaGalduak = partidaGalduak;
     }
-    
+
+    /** @return Taldeak lortutako puntu kopurua */
     public int getPuntuak() {
         return puntuak;
     }
-    
+
+    /** @param puntuak Taldearen puntu kopurua ezartzeko */
     public void setPuntuak(int puntuak) {
         this.puntuak = puntuak;
     }
-    
+
+    /** @return Irabazitako set kopurua */
     public int getSetakIrabaziak() {
         return setakIrabaziak;
     }
-    
-    // Setak irabaziak aldatzean setDiferentzia eguneratzen da
+
+    /**
+     * Irabazitako set kopurua ezartzen du eta set diferentzia eguneratzen du.
+     * @param setakIrabaziak Irabazitako set kopurua
+     */
     public void setSetakIrabaziak(int setakIrabaziak) {
         this.setakIrabaziak = setakIrabaziak;
         this.setDiferentzia = this.setakIrabaziak - this.setakGalduak;
     }
-    
+
+    /** @return Galdu diren set kopurua */
     public int getSetakGalduak() {
         return setakGalduak;
     }
-    
-    // Setak galduak aldatzean setDiferentzia eguneratzen da
+
+    /**
+     * Galdu diren set kopurua ezartzen du eta set diferentzia eguneratzen du.
+     * @param setakGalduak Galdu diren set kopurua
+     */
     public void setSetakGalduak(int setakGalduak) {
         this.setakGalduak = setakGalduak;
         this.setDiferentzia = this.setakIrabaziak - this.setakGalduak;
     }
-    
+
+    /** @return Seten arteko diferentzia (irabazitakoak - galduak) */
     public int getSetDiferentzia() {
         return setDiferentzia;
     }
-    
-    // Partida jokatu bat gehitzeko metodoa
+
+    /**
+     * Partida jokatu bat gehitzen du.
+     */
     public void gehitupartidaJokatua() {
         partidaJokatuak++;
     }
-    
-    // Irabazitako partida bat gehitzeko metodoa, puntuak ere handitzen ditu
+
+    /**
+     * Irabazitako partida bat gehitzen du eta puntuak eguneratzen ditu (+3).
+     */
     public void gehitupartidaIrabazia() {
         partidaIrabaziak++;
         puntuak += 3; // Irabazteagatik 3 puntu ematen dira
     }
-    
-    // Galduko partida bat gehitzeko metodoa, punturik gehitu gabe
+
+    /**
+     * Galduko partida bat gehitzen du, punturik gehitu gabe.
+     */
     public void gehitupartidaGaldua() {
         partidaGalduak++;
         // Ez dira punturik gehitzen
     }
-    
-    // Set irabazi kopurua handitzeko metodoa, diferentzia ere eguneratzen du
+
+    /**
+     * Irabazitako set kopurua handitzen du eta set diferentzia eguneratzen du.
+     * @param setak Gehitu nahi diren set kopurua
+     */
     public void gehituSetakIrabaziak(int setak) {
         this.setakIrabaziak += setak;
         this.setDiferentzia = this.setakIrabaziak - this.setakGalduak;
     }
-    
-    // Set galdu kopurua handitzeko metodoa, diferentzia ere eguneratzen du
+
+    /**
+     * Galdu diren set kopurua handitzen du eta set diferentzia eguneratzen du.
+     * @param setak Gehitu nahi diren set kopurua
+     */
     public void gehituSetakGalduak(int setak) {
         this.setakGalduak += setak;
         this.setDiferentzia = this.setakIrabaziak - this.setakGalduak;

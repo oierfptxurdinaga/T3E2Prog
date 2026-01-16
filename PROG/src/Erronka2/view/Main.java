@@ -6,17 +6,24 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * Main klasea - Aplikazio nagusiaren interfazea eta eguneraketa metodoak
+ * Main klasea - Aplikazio nagusiaren interfazea eta eguneraketa metodoak.
+ * 
+ * JFrame baten bidez, aplikazioaren fitxa-panel nagusia kudeatzen du,
+ * eta bertan hainbat fitxa ditu: Partiduak, Fitxaketak, Taldeak, Klasifikazioa eta Emaitzak.
+ * Fitxa bakoitzak bere panela du eta eguneraketak kudeatzen dira.
  */
 public class Main extends JFrame {
-    private JPanel panelNagusia;
-    private JTabbedPane fitxaPanela;
-    private EmaitzakMetodo emaitzakPanela;
-    private KlasifikazioaMetodo klasifikazioaPanela;
-    private PartiduakMetodo partiduakPanela;
-    private FitxaketakMetodo fitxaketakPanela;
-    private TaldeakMetodo taldeakPanela;
+    private JPanel panelNagusia;               // Leiho nagusiko panela
+    private JTabbedPane fitxaPanela;           // Fitxak kudeatzeko panela
+    private EmaitzakMetodo emaitzakPanela;     // Emaitzak panela
+    private KlasifikazioaMetodo klasifikazioaPanela; // Klasifikazioa panela
+    private PartiduakMetodo partiduakPanela;   // Partiduak panela
+    private FitxaketakMetodo fitxaketakPanela; // Fitxaketak panela
+    private TaldeakMetodo taldeakPanela;       // Taldeak panela
 
+    /**
+     * Eraikitzailea - Aplikazioaren leihoa sortu eta fitxak gehitzen ditu.
+     */
     public Main() {
         try {
             setTitle("Boleibol Federazioa - 3. Taldea - Sistema");
@@ -30,27 +37,26 @@ public class Main extends JFrame {
             panelNagusia.setBackground(urdina);
             setContentPane(panelNagusia);
 
-            // Goiko fitxak sortu eta kudeatu
+            // Fitxa panela sortu eta konfiguratu
             fitxaPanela = new JTabbedPane();
             fitxaPanela.setFont(new Font("Arial", Font.BOLD, 14));
 
             try {
-                // Panel guztiak sortu Main erreferentziarekin
+                // Panel bakoitza sortu, try-catch erabiliz erroreak kontrolatzeko
                 partiduakPanela = new PartiduakMetodo(urdina, this);
                 fitxaketakPanela = new FitxaketakMetodo(urdina);
                 taldeakPanela = new TaldeakMetodo(urdina);
                 klasifikazioaPanela = new KlasifikazioaMetodo(urdina);
                 emaitzakPanela = new EmaitzakMetodo(urdina);
-                
             } catch (Exception e) {
                 System.err.println("Errorea panelak sortzerakoan: " + e.getMessage());
                 JOptionPane.showMessageDialog(this, 
                     "Errorea interfazearen osagaiak kargatzerakoan: " + e.getMessage(), 
                     "Errorea", JOptionPane.ERROR_MESSAGE);
-                // Intento de continuar con lo que se pudo cargar
+                // Saia gaitezen aurrera jarraitzen dugun osagai batzuekin
             }
 
-            // Fitxak gehitu con manejo de excepciones por cada panel
+            // Fitxak gehitu, errore posibleak kontrolatuz
             try {
                 if (partiduakPanela != null && partiduakPanela.getPanela() != null) {
                     fitxaPanela.addTab("Partiduak", partiduakPanela.getPanela());
@@ -58,7 +64,7 @@ public class Main extends JFrame {
             } catch (Exception e) {
                 System.err.println("Errorea Partiduak fitxa gehitzean: " + e.getMessage());
             }
-            
+
             try {
                 if (fitxaketakPanela != null && fitxaketakPanela.getPanela() != null) {
                     fitxaPanela.addTab("Fitxaketak", fitxaketakPanela.getPanela());
@@ -66,7 +72,7 @@ public class Main extends JFrame {
             } catch (Exception e) {
                 System.err.println("Errorea Fitxaketak fitxa gehitzean: " + e.getMessage());
             }
-            
+
             try {
                 if (taldeakPanela != null && taldeakPanela.getPanela() != null) {
                     fitxaPanela.addTab("Taldeak", taldeakPanela.getPanela());
@@ -74,7 +80,7 @@ public class Main extends JFrame {
             } catch (Exception e) {
                 System.err.println("Errorea Taldeak fitxa gehitzean: " + e.getMessage());
             }
-            
+
             try {
                 if (klasifikazioaPanela != null && klasifikazioaPanela.getPanela() != null) {
                     fitxaPanela.addTab("Klasifikazioa", klasifikazioaPanela.getPanela());
@@ -82,7 +88,7 @@ public class Main extends JFrame {
             } catch (Exception e) {
                 System.err.println("Errorea Klasifikazioa fitxa gehitzean: " + e.getMessage());
             }
-            
+
             try {
                 if (emaitzakPanela != null && emaitzakPanela.getPanela() != null) {
                     fitxaPanela.addTab("Emaitzak", emaitzakPanela.getPanela());
@@ -91,19 +97,23 @@ public class Main extends JFrame {
                 System.err.println("Errorea Emaitzak fitxa gehitzean: " + e.getMessage());
             }
 
-            // Aldaketa entzulea gehitu fitxa aldatzeko
+            // Fitxa aldatzean eguneratzeak egiteko entzulea gehitu
             fitxaPanela.addChangeListener(new ChangeListener() {
+                /**
+                 * Fitxa aldatzean dagokion panela eguneratzen du behar izanez gero.
+                 * @param e ChangeEvent
+                 */
                 @Override
                 public void stateChanged(ChangeEvent e) {
                     try {
                         int hautatutakoIndizea = fitxaPanela.getSelectedIndex();
                         switch (hautatutakoIndizea) {
-                            case 3: // Klasifikazioa
+                            case 3: // Klasifikazioa fitxa
                                 if (klasifikazioaPanela != null) {
                                     klasifikazioaPanela.eguneratuTaula();
                                 }
                                 break;
-                            case 4: // Emaitzak
+                            case 4: // Emaitzak fitxa
                                 if (emaitzakPanela != null) {
                                     emaitzakPanela.eguneratuTaula();
                                 }
@@ -119,10 +129,10 @@ public class Main extends JFrame {
             });
 
             panelNagusia.add(fitxaPanela, BorderLayout.CENTER);
-            
-            // Konsolan hasiera erakutsi
+
+            // Hasierako mezua konsolan
             System.out.println("Aplikazioa Erabiltzaileak hasita");
-            
+
         } catch (HeadlessException e) {
             System.err.println("Errorea interfazea sortzerakoan (Headless): " + e.getMessage());
             JOptionPane.showMessageDialog(null, 
@@ -136,44 +146,44 @@ public class Main extends JFrame {
                 "Errorea Larria", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     /**
-     * Fitxa guztiak eguneratu (partidua gehitu ondoren deitu)
+     * Fitxa guztiak eguneratu behar denean deitu.
+     * Normalean partida bat gehitu ondoren erabiltzen da.
      */
     public void eguneratuDena() {
         try {
-            // Klasifikazioa eguneratu
             if (klasifikazioaPanela != null) {
                 klasifikazioaPanela.eguneratuTaula();
             }
         } catch (Exception e) {
             System.err.println("Errorea klasifikazioa eguneratzerakoan: " + e.getMessage());
         }
-        
+
         try {
-            // Emaitzak eguneratu
             if (emaitzakPanela != null) {
                 emaitzakPanela.eguneratuTaula();
             }
         } catch (Exception e) {
             System.err.println("Errorea emaitzak eguneratzerakoan: " + e.getMessage());
         }
-        
-        // Hemen beste fitxak eguneratu ditzakezu beharrezkoa bada
+        // Behar izanez gero beste fitxak ere eguneratu daitezke hemen
     }
 
     /**
-     * Main metodoa - aplikazioa martxan jartzen du
+     * Main metodoa - aplikazioa martxan jartzen du.
+     * Hemen Login leihoa abiarazten da zuzenean.
+     *
+     * @param args Komando lerroko argumentuak
      */
     public static void main(String[] args) {
         try {
-            // EJECUTAR EL LOGIN EN LUGAR DE MAIN DIRECTAMENTE
             SwingUtilities.invokeLater(() -> new Login().setVisible(true));
         } catch (Exception e) {
             System.err.println("Errorea aplikazioa abiarazterakoan: " + e.getMessage());
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, 
-                "Errorea aplicazioa abiarazterakoan: " + e.getMessage(), 
+            JOptionPane.showMessageDialog(null,
+                "Errorea aplicazioa abiarazterakoan: " + e.getMessage(),
                 "Errorea Larria", JOptionPane.ERROR_MESSAGE);
         }
     }

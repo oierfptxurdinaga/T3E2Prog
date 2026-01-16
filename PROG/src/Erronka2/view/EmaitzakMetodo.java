@@ -9,22 +9,33 @@ import java.util.List;
 import Erronka2.model.Partidua;
 
 /**
- * Emaitzak fitxaren interfazea - ORAIN LOGIKA ERREAL ETA AUTOMATIKOAREKIN
+ * Emaitzak fitxaren interfazea.
  * 
  * Swing erabiliz, erabiltzaileak denboraldia eta jardunaldia aukeratu ditzake
  * eta hautatutako irizpideen arabera emaitzak taulan ikusi.
  */
 public class EmaitzakMetodo {
     
-    private JPanel panela;                      // Interfazeko panela nagusia
-    private Color urdina;                       // Atzeko plano kolorea
-    private JComboBox<String> denboraldiaCombo;// Denboraldia hautatzeko ComboBox
-    private JComboBox<String> jardunaldiaCombo;// Jardunaldia hautatzeko ComboBox
-    private JTable taula;                       // Emaitzak erakusteko taula
-    private DefaultTableModel taulaModeloa;    // Taularen datuen modelo dinamikoa
+    /** Interfazeko panela nagusia */
+    private JPanel panela;
+    
+    /** Atzeko plano kolorea */
+    private Color urdina;
+    
+    /** Denboraldia hautatzeko ComboBox */
+    private JComboBox<String> denboraldiaCombo;
+    
+    /** Jardunaldia hautatzeko ComboBox */
+    private JComboBox<String> jardunaldiaCombo;
+    
+    /** Emaitzak erakusteko taula */
+    private JTable taula;
+    
+    /** Taularen datuen modelo dinamikoa */
+    private DefaultTableModel taulaModeloa;
     
     /**
-     * Eraikitzailea, panela eta osagai guztiak sortzen ditu
+     * Eraikitzailea, panela eta osagai guztiak sortzen ditu.
      * @param urdina Kolore nagusia panela eta osagaietarako
      */
     public EmaitzakMetodo(Color urdina) {
@@ -169,8 +180,8 @@ public class EmaitzakMetodo {
     }
     
     /**
-     * Emaitzak taulan automatikoki kargatzen ditu hautatutako denboraldia eta jardunaldia kontuan hartuta
-     * @throws Exception - Erroreak gertatzen direnean
+     * Emaitzak taulan automatikoki kargatzen ditu hautatutako denboraldia eta jardunaldia kontuan hartuta.
+     * @throws Exception Erroreak gertatzen direnean
      */
     private void kargatuEmaitzakAutomatikoki() throws Exception {
         taulaModeloa.setRowCount(0); // Taula garbitu
@@ -178,7 +189,6 @@ public class EmaitzakMetodo {
         String jardunaldiaHautatua = (String) jardunaldiaCombo.getSelectedItem();
         String denboraldiaHautatua = (String) denboraldiaCombo.getSelectedItem();
         
-        // Aukerak balidatu
         if (jardunaldiaHautatua == null) {
             throw new IllegalStateException("Jardunaldia hautatu gabe.");
         }
@@ -187,7 +197,6 @@ public class EmaitzakMetodo {
             throw new IllegalStateException("Denboraldia hautatu gabe.");
         }
         
-        // Partiduak iragazi eta lortu
         List<Partidua> partiduak;
         try {
             partiduak = Partidua.getPartiduakByDenboraldiaAndJardunaldia(
@@ -198,19 +207,16 @@ public class EmaitzakMetodo {
             if (partiduak == null) {
                 throw new IllegalStateException("Partidu zerrenda nulua itzuli da.");
             }
-            
         } catch (Exception e) {
             throw new Exception("Errorea partiduak iragazterakoan: " + e.getMessage(), e);
         }
         
         boolean partiduakAurkituta = false;
         
-        // Partidu bakoitza taulan gehitu
         for (Partidua partidua : partiduak) {
             try {
                 partiduakAurkituta = true;
                 
-                // Partidu balidazioa
                 if (partidua == null) {
                     throw new IllegalStateException("Partidu nulua aurkitu da.");
                 }
@@ -223,7 +229,6 @@ public class EmaitzakMetodo {
                     throw new IllegalStateException("Kanpoko taldea nulua partiduan.");
                 }
                 
-                // Taularen errenkadan gehitu datuak
                 Object[] errenkadaDatuak = {
                     partidua.getEtxeko_taldea().getIzena(),
                     partidua.getEtxekoTaldekoSetak(),
@@ -240,7 +245,6 @@ public class EmaitzakMetodo {
             }
         }
         
-        // Partidurik ez badago, mezu bat agertu taulan
         if (!partiduakAurkituta) {
             try {
                 Object[] daturikEz = {
@@ -259,7 +263,7 @@ public class EmaitzakMetodo {
     }
     
     /**
-     * Taula beste klaseetatik eguneratzeko metodo publikoa
+     * Taula beste klaseetatik eguneratzeko metodo publikoa.
      */
     public void eguneratuTaula() {
         try {
@@ -273,30 +277,40 @@ public class EmaitzakMetodo {
     }
     
     /**
-     * Emaitzak erakusten dituen JPanel hau itzultzen du
+     * Emaitzak erakusten dituen JPanel hau itzultzen du.
      * @return JPanel panela nagusia
      */
     public JPanel getPanela() {
         return panela;
     }
     
-    // Denboraldia eta jardunaldia hautatzeko ComboBox-en getter-ak
+    /**
+     * Denboraldia aukeratzeko ComboBox itzultzen du.
+     * @return Denboraldia ComboBox
+     */
     public JComboBox<String> getDenboraldiaCombo() {
         return denboraldiaCombo;
     }
     
+    /**
+     * Jardunaldia aukeratzeko ComboBox itzultzen du.
+     * @return Jardunaldia ComboBox
+     */
     public JComboBox<String> getJardunaldiaCombo() {
         return jardunaldiaCombo;
     }
     
-    // Taularen getter-a
+    /**
+     * Emaitzak erakusten dituen JTable itzultzen du.
+     * @return JTable taula nagusia
+     */
     public JTable getTaula() {
         return taula;
     }
     
     /**
      * Partidu berri bat gehitu dela jakinarazteko metodoa,
-     * taula automatikoki eguneratzen du
+     * taula automatikoki eguneratzen du.
      */
     public void notifyPartiduaGehitu() {
         try {

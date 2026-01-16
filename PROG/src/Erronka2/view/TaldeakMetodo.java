@@ -10,22 +10,28 @@ import java.util.List;
 
 /**
  * Taldeak fitxako interfazea eta edukia kudeatzen du.
+ * 
+ * Talde bakoitzaren botoiak sortzen ditu, eta botoi horien klik-ek
+ * taldeko jokalariak erakusten ditu zerrenda batean.
+ * Era berean, saioa amaitzeko botoia du.
  */
 public class TaldeakMetodo {
 
-    private JPanel taldeakPanela;
-    private JPanel sarePanela;
-    private JButton saioaAmaituBotoia;
-    private JButton botoia;
-    private DefaultListModel<Jokalaria> modeloa;
-    private ImageIcon ikonoa;
-    private List<Jokalaria> jokalariak;
-    private  JList<Jokalaria> zerrenda;
-    private JScrollPane korritzePanela;
-    private Image irudia;
+    private JPanel taldeakPanela;         // Taldeak fitxaren panela nagusia
+    private JPanel sarePanela;            // Taldeen botoiak sare bezala kokatzen dituena
+    private JButton saioaAmaituBotoia;   // Saioa amaitzeko botoia
+    private JButton botoia;               // Talde bakoitzeko botoia sortzeko erabiltzen dena
+    private DefaultListModel<Jokalaria> modeloa;  // Jokalari zerrendaren modeloa
+    private ImageIcon ikonoa;             // Taldearen logo ikonoa
+    private List<Jokalaria> jokalariak;   // Taldeko jokalarien zerrenda
+    private JList<Jokalaria> zerrenda;    // Jokalariak erakusteko JList
+    private JScrollPane korritzePanela;   // Jokalari zerrendaren korritze panela
+    private Image irudia;                 // Taldearen logoaren irudia eskalatzeko
 
     /**
-     * Eraikitzailea - Taldeak panel nagusia sortu eta botoiak gehitu
+     * Eraikitzailea - Taldeak panel nagusia sortu eta botoiak gehitu.
+     * 
+     * @param kolorea Taldeak panela eta botoien atzeko plano kolorea
      */
     public TaldeakMetodo(Color kolorea) {
 
@@ -33,7 +39,7 @@ public class TaldeakMetodo {
         taldeakPanela.setBackground(kolorea);
 
         // ===============================
-        // TALDEEN SAREA
+        // TALDEEN SAREA - Talde bakoitzeko botoiak sortu sare bat bezala
         // ===============================
         sarePanela = new JPanel(new GridLayout(2, 3, 30, 30));
         sarePanela.setBackground(kolorea);
@@ -63,7 +69,7 @@ public class TaldeakMetodo {
             sarePanela.add(taldeBotoiaSortu(
                     "Santutxu Haizeak",
                     "/Erronka2/images/LogosEquipos/SantutxuHaizeak.png"));
-                    
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(taldeakPanela,
                 "Errorea talde botoiak sortzerakoan: " + e.getMessage(),
@@ -74,7 +80,7 @@ public class TaldeakMetodo {
         taldeakPanela.add(sarePanela);
 
         // ===============================
-        // SAIOA AMAITU BOTOIA
+        // SAIOA AMAITU BOTOIA - Erabiltzaileak saioa ixteko
         // ===============================
         saioaAmaituBotoia = new JButton("Saioa amaitu");
         saioaAmaituBotoia.setFont(new Font("Arial", Font.BOLD, 18));
@@ -82,8 +88,10 @@ public class TaldeakMetodo {
         saioaAmaituBotoia.setForeground(Color.WHITE);
         saioaAmaituBotoia.setBounds(700, 480, 170, 40);
         saioaAmaituBotoia.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					// Login leihoa berriro ireki eta hau itxi
 					SwingUtilities.invokeLater(() -> new Login().setVisible(true));
 					JFrame frame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
 					frame.dispose();
@@ -94,21 +102,25 @@ public class TaldeakMetodo {
 					ex.printStackTrace();
 				}
 			}
-
 		});
 
         taldeakPanela.add(saioaAmaituBotoia);
     }
 
     /**
-     * Talde bakoitzerako botoia sortzen du (logo + izena)
-     * Klik egitean, taldeko jokalariak erakusten dira
+     * Talde bakoitzerako botoia sortzen du (logo eta izena duen botoia).
+     * Botoi horrek taldeko jokalariak erakusten ditu klik egitean.
+     * 
+     * @param izena Taldearen izena
+     * @param logoBidea Taldearen logoaren irudiaren path-a
+     * @return Talde botoia, ikonoz eta izenez osatua
+     * @throws Exception Logo irudia kargatzerakoan errorea baldin badago
      */
     private JButton taldeBotoiaSortu(String izena, String logoBidea) throws Exception {
 
         botoia = new JButton(izena);
 
-        // Logoa kargatu
+        // Logoa kargatu eta botoiari ipini
         try {
             java.net.URL url = getClass().getResource(logoBidea);
             if (url != null) {
@@ -132,7 +144,7 @@ public class TaldeakMetodo {
         botoia.setContentAreaFilled(false);
         botoia.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Klik egiterakoan jokalariak erakutsi
+        // Klik egiterakoan taldeko jokalariak erakutsi
         botoia.addActionListener(e -> {
             try {
                 erakutsiJokalariak(izena);
@@ -147,6 +159,12 @@ public class TaldeakMetodo {
         return botoia;
     }
 
+    /**
+     * Talde baten jokalariak erakusten ditu modala erabiliz.
+     * 
+     * @param taldeIzena Taldearen izena
+     * @throws Exception Taldea ez bada aurkitzen edo jokalariak lortzerakoan errorea badago
+     */
     private void erakutsiJokalariak(String taldeIzena) throws Exception {
 
         int taldeKod = lortuTaldeKod(taldeIzena);
@@ -156,7 +174,7 @@ public class TaldeakMetodo {
         }
 
         try {
-            // Modelotik jokalariak lortu
+            // Taldeko jokalariak lortu
             jokalariak = Jokalaria.getJokalariakByTaldea(taldeKod);
 
             if (jokalariak == null) {
@@ -171,7 +189,7 @@ public class TaldeakMetodo {
                 return;
             }
 
-            // Jokalariak JList batean sartu
+            // Jokalariak JList batean erakutsi
             modeloa = new DefaultListModel<>();
             for (Jokalaria j : jokalariak) {
                 if (j == null) {
@@ -198,7 +216,11 @@ public class TaldeakMetodo {
     }
 
     /**
-     * Taldearen izenaren arabera bere kodea bueltatzen du
+     * Taldearen izenaren arabera bere kodea lortzen du.
+     * 
+     * @param taldeIzena Taldearen izena
+     * @return Taldearen kodea, edo -1 taldea ez badago
+     * @throws IllegalArgumentException taldeIzena hutsik badago
      */
     private int lortuTaldeKod(String taldeIzena) throws IllegalArgumentException {
         if (taldeIzena == null || taldeIzena.trim().isEmpty()) {
@@ -224,7 +246,9 @@ public class TaldeakMetodo {
     }
 
     /**
-     * Taldeak panela itzultzen du
+     * Taldeak panela itzultzen du.
+     * 
+     * @return Taldeak fitxako JPanel nagusia
      */
     public JPanel getPanela() {
         return taldeakPanela;

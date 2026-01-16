@@ -4,36 +4,79 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Partidua modelatzen duen klasea
+ * Partidua modelatzen duen klasea.
+ * <p>
+ * Partiduaren oinarrizko datuak gordetzen ditu, hala nola kodea, taldeak,
+ * data, set kopuruak eta denboraldia.
+ * Gainera, partiduen zerrenda estatikoa eta denboraldiaren kontrol estatikoa kudeatzen ditu.
+ * </p>
  */
 public class Partidua {
 
-    // Partiduaren oinarrizko datuak
-    private int partidu_kod;               // Partiduaren kodea (identifikatzailea)
-    private Taldeak etxeko_taldea;        // Etxeko taldea
-    private Taldeak kanpoko_taldea;       // Kanpoko taldea
-    private String zelaia;                 // Joko zelaia
-    private String partiduData;            // Partiduaren data
-    private String partiduMota;            // Partiduaren mota
-    private String jardunaldia;            // Jardunaldia (txapelketako jardunaldi zehatza)
-    private int etxekoTaldekoSetak;       // Etxeko taldeak irabazitako set kopurua
-    private int kanpokoTaldekoSetak;      // Kanpoko taldeak irabazitako set kopurua
-    private String denboraldia;            // Denboraldia (liga edo txapelketa)
-    private boolean partiduaJokatuta;     // Partidua jokatu den edo ez adierazten du
+    /** Partiduaren kodea (identifikatzailea) */
+    private int partidu_kod;
 
-    // Partidu guztiak gordetzeko zerrenda estatikoa
+    /** Etxeko taldea */
+    private Taldeak etxeko_taldea;
+
+    /** Kanpoko taldea */
+    private Taldeak kanpoko_taldea;
+
+    /** Joko zelaia */
+    private String zelaia;
+
+    /** Partiduaren data */
+    private String partiduData;
+
+    /** Partiduaren mota */
+    private String partiduMota;
+
+    /** Jardunaldia (txapelketako jardunaldi zehatza) */
+    private String jardunaldia;
+
+    /** Etxeko taldeak irabazitako set kopurua */
+    private int etxekoTaldekoSetak;
+
+    /** Kanpoko taldeak irabazitako set kopurua */
+    private int kanpokoTaldekoSetak;
+
+    /** Denboraldia (liga edo txapelketa) */
+    private String denboraldia;
+
+    /** Partidua jokatu den edo ez adierazten du */
+    private boolean partiduaJokatuta;
+
+    /** Partidu guztiak gordetzeko zerrenda estatikoa */
     private static ArrayList<Partidua> partiduakZerrenda = new ArrayList<>();
-    
-    // Denboraldi uneko kontrol estatikoa
-    private static String unekoDenboraldia = null;      // Uneko denboraldiaren izena
-    private static boolean denboraldiaHasita = false;   // Denboraldia hasi den ala ez
+
+    /** Uneko denboraldiaren izena */
+    private static String unekoDenboraldia = null;
+
+    /** Denboraldia hasi den ala ez */
+    private static boolean denboraldiaHasita = false;
 
     // ==================== ERAIKITZAILEAK ====================
 
+    /**
+     * Eraikitzaile hutsak, partidua jokatu gabe sortzen du.
+     */
     public Partidua() {
-        this.partiduaJokatuta = false; // Hasierako balioa jokatu gabea
+        this.partiduaJokatuta = false;
     }
 
+    /**
+     * Eraikitzaile parametrizatuak, partiduaren datu guztiak ezartzen ditu.
+     * @param partidu_kod Partiduaren kodea
+     * @param etxeko_taldea Etxeko taldea
+     * @param kanpoko_taldea Kanpoko taldea
+     * @param zelaia Joko zelaia
+     * @param partiduData Partiduaren data
+     * @param partiduMota Partiduaren mota
+     * @param jardunaldia Jardunaldia
+     * @param etxekoSetak Etxeko taldeko set kopurua
+     * @param kanpokoSetak Kanpoko taldeko set kopurua
+     * @param denboraldia Denboraldia
+     */
     public Partidua(int partidu_kod, Taldeak etxeko_taldea, Taldeak kanpoko_taldea, String zelaia, String partiduData,
                     String partiduMota, String jardunaldia, int etxekoSetak, int kanpokoSetak, String denboraldia) {
         this.partidu_kod = partidu_kod;
@@ -46,116 +89,140 @@ public class Partidua {
         this.etxekoTaldekoSetak = etxekoSetak;
         this.kanpokoTaldekoSetak = kanpokoSetak;
         this.denboraldia = denboraldia;
-        this.partiduaJokatuta = (etxekoSetak > 0 || kanpokoSetak > 0); // Set kopuru bat badago, partidua jokatu dela suposatu
+        this.partiduaJokatuta = (etxekoSetak > 0 || kanpokoSetak > 0);
     }
 
     // ==================== GETTER ETA SETTER METODOAK ====================
 
+    /** @return Partiduaren kodea */
     public int getPartidu_kod() {
         return partidu_kod;
     }
 
+    /** @param partidu_kod Partiduaren kodea ezartzen du */
     public void setPartidu_kod(int partidu_kod) {
         this.partidu_kod = partidu_kod;
     }
 
+    /** @return Etxeko taldea */
     public Taldeak getEtxeko_taldea() {
         return etxeko_taldea;
     }
 
+    /** @param etxeko_taldea Etxeko taldea ezartzen du */
     public void setEtxeko_taldea(Taldeak etxeko_taldea) {
         this.etxeko_taldea = etxeko_taldea;
     }
 
+    /** @return Kanpoko taldea */
     public Taldeak getKanpoko_taldea() {
         return kanpoko_taldea;
     }
 
+    /** @param kanpoko_taldea Kanpoko taldea ezartzen du */
     public void setKanpoko_taldea(Taldeak kanpoko_taldea) {
         this.kanpoko_taldea = kanpoko_taldea;
     }
 
+    /** @return Joko zelaia */
     public String getZelaia() {
         return zelaia;
     }
 
+    /** @param zelaia Joko zelaia ezartzen du */
     public void setZelaia(String zelaia) {
         this.zelaia = zelaia;
     }
 
+    /** @return Partiduaren data */
     public String getPartiduData() {
         return partiduData;
     }
 
+    /** @param partiduData Partiduaren data ezartzen du */
     public void setPartiduData(String partiduData) {
         this.partiduData = partiduData;
     }
 
+    /** @return Partiduaren mota */
     public String getPartiduMota() {
         return partiduMota;
     }
 
+    /** @param partiduMota Partiduaren mota ezartzen du */
     public void setPartiduMota(String partiduMota) {
         this.partiduMota = partiduMota;
     }
 
+    /** @return Jardunaldia */
     public String getJardunaldia() {
         return jardunaldia;
     }
 
+    /** @param jardunaldia Jardunaldia ezartzen du */
     public void setJardunaldia(String jardunaldia) {
         this.jardunaldia = jardunaldia;
     }
 
-    // Izen zaharrak mantendu dira, baina orain set kopuruak itzultzen ditu puntuazio moduan
+    /** @return Etxeko taldeko puntuazioa (set kopurua) */
     public int getEtxekoTaldekoPuntuazioa() {
         return etxekoTaldekoSetak;
     }
 
+    /** @param etxekoTaldekoSetak Etxeko taldeko puntuazioa ezartzen du */
     public void setEtxekoTaldekoPuntuazioa(int etxekoTaldekoSetak) {
         this.etxekoTaldekoSetak = etxekoTaldekoSetak;
-        this.partiduaJokatuta = true; // Puntuazioak jarrita, partidua jokatu dela suposatu
+        this.partiduaJokatuta = true;
     }
 
+    /** @return Kanpoko taldeko puntuazioa (set kopurua) */
     public int getKanpokoTaldekoPuntuazioa() {
         return kanpokoTaldekoSetak;
     }
 
+    /** @param kanpokoTaldekoSetak Kanpoko taldeko puntuazioa ezartzen du */
     public void setKanpokoTaldekoPuntuazioa(int kanpokoTaldekoSetak) {
         this.kanpokoTaldekoSetak = kanpokoTaldekoSetak;
         this.partiduaJokatuta = true;
     }
 
+    /** @return Denboraldia */
     public String getDenboraldia() {
         return denboraldia;
     }
 
+    /** @param denboraldia Denboraldia ezartzen du */
     public void setDenboraldia(String denboraldia) {
         this.denboraldia = denboraldia;
     }
 
+    /** @return Partidua jokatu den ala ez */
     public boolean isPartiduaJokatuta() {
         return partiduaJokatuta;
     }
 
+    /** @param partiduaJokatuta Partidua jokatu den ala ez ezartzen du */
     public void setPartiduaJokatuta(boolean partiduaJokatuta) {
         this.partiduaJokatuta = partiduaJokatuta;
     }
 
-    // Set kopuruetarako getter eta setter berriak
+    /** @return Etxeko taldeko set kopurua */
     public int getEtxekoTaldekoSetak() {
         return etxekoTaldekoSetak;
     }
 
+    /** @param etxekoTaldekoSetak Etxeko taldeko set kopurua ezartzen du */
     public void setEtxekoTaldekoSetak(int etxekoTaldekoSetak) {
         this.etxekoTaldekoSetak = etxekoTaldekoSetak;
         this.partiduaJokatuta = true;
     }
 
+    /** @return Kanpoko taldeko set kopurua */
     public int getKanpokoTaldekoSetak() {
         return kanpokoTaldekoSetak;
     }
 
+    /** @param kanpokoTaldekoSetak Kanpoko taldeko set kopurua ezartzen du */
     public void setKanpokoTaldekoSetak(int kanpokoTaldekoSetak) {
         this.kanpokoTaldekoSetak = kanpokoTaldekoSetak;
         this.partiduaJokatuta = true;
@@ -163,52 +230,56 @@ public class Partidua {
 
     // ==================== DENBORALDIEN KONTROL STATIKOAK ====================
 
+    /** @return Uneko denboraldiaren izena */
     public static String getUnekoDenboraldia() {
         return unekoDenboraldia;
     }
 
+    /** @param denboraldia Uneko denboraldiaren izena ezartzen du */
     public static void setUnekoDenboraldia(String denboraldia) {
         unekoDenboraldia = denboraldia;
     }
 
+    /** @return Denboraldia hasi den ala ez */
     public static boolean isDenboraldiaHasita() {
         return denboraldiaHasita;
     }
 
+    /** @param hasita Denboraldia hasi den ala ez ezartzen du */
     public static void setDenboraldiaHasita(boolean hasita) {
         denboraldiaHasita = hasita;
     }
 
     /**
-     * Denboraldi berri bat hasi daitekeen egiaztatzen du
+     * Denboraldi berri bat hasi daitekeen egiaztatzen du.
      * @return true hasi daiteke, false dagoeneko hasi bada
      */
     public static boolean denboraldiaAmaituta() {
         if (unekoDenboraldia == null) {
-            return true; // Ez dago denboraldi unekorik, hasi daiteke
+            return true;
         }
         
         List<Partidua> partiduak = getPartiduakByDenboraldia(unekoDenboraldia);
         if (partiduak.isEmpty()) {
-            return true; // Ez dago partidurik denboraldi horretan
+            return true;
         }
         
         for (Partidua p : partiduak) {
             if (!p.isPartiduaJokatuta()) {
-                return false; // Badago jokatu gabeko partidu bat
+                return false;
             }
         }
-        return true; // Partidu guztiak jokatu dira
+        return true;
     }
 
     /**
-     * Denboraldi berria hasi
+     * Denboraldi berria hasi.
      * @param denboraldiaBerria Hasi nahi den denboraldiaren izena
      * @return true hasi bada, false ezin bada hasi
      */
     public static boolean hasiDenboraldiaBerria(String denboraldiaBerria) {
         if (unekoDenboraldia != null && denboraldiaHasita) {
-            return false; // Dagoeneko denboraldi bat hasi da
+            return false;
         }
         
         unekoDenboraldia = denboraldiaBerria;
@@ -219,7 +290,7 @@ public class Partidua {
     }
 
     /**
-     * Uneko denboraldia amaitu
+     * Uneko denboraldia amaitu.
      */
     public static void amaituDenboraldia() {
         if (unekoDenboraldia == null) {
@@ -236,28 +307,34 @@ public class Partidua {
     // ==================== PARTIDUEN KUDEAKETA ====================
 
     /**
-     * Partidu bat gehitu partidu zerrendara
+     * Partidu bat gehitu partidu zerrendara.
+     * @param p Gehitu nahi den partidua
      */
     public static void gehituPartidua(Partidua p) {
         partiduakZerrenda.add(p);
     }
 
     /**
-     * Partidu guztiak itzuli
+     * Partidu guztiak itzuli.
+     * @return Partidu zerrenda osoa
      */
     public static ArrayList<Partidua> getPartiduakZerrenda() {
         return partiduakZerrenda;
     }
 
     /**
-     * Partidu zerrenda berria ezarri
+     * Partidu zerrenda berria ezarri.
+     * @param zerrenda Partidu zerrenda berria
      */
     public static void setPartiduakZerrenda(ArrayList<Partidua> zerrenda) {
         partiduakZerrenda = zerrenda;
     }
 
     /**
-     * Denboraldi eta jardunaldiaren arabera partiduak iragazi
+     * Denboraldi eta jardunaldiaren arabera partiduak iragazi.
+     * @param denboraldia Denboraldia iragazteko (edo "Guztiak")
+     * @param jardunaldia Jardunaldia iragazteko (edo "Guztiak")
+     * @return Iragazitako partiduen zerrenda
      */
     public static List<Partidua> getPartiduakByDenboraldiaAndJardunaldia(String denboraldia, String jardunaldia) {
         List<Partidua> emaitza = new ArrayList<>();
@@ -277,7 +354,9 @@ public class Partidua {
     }
 
     /**
-     * Jardunaldi baten arabera partiduak lortu
+     * Jardunaldi baten arabera partiduak lortu.
+     * @param jardunaldia Jardunaldia
+     * @return Jardunaldiko partiduak
      */
     public static List<Partidua> getPartiduakByJardunaldia(String jardunaldia) {
         List<Partidua> emaitza = new ArrayList<>();
@@ -290,14 +369,17 @@ public class Partidua {
     }
 
     /**
-     * Partidu guztiak lortu
+     * Partidu guztiak lortu.
+     * @return Partidu guztiak zerrenda batean
      */
     public static List<Partidua> getPartiduakGuztiak() {
         return new ArrayList<>(partiduakZerrenda);
     }
 
     /**
-     * Denboraldi bateko partiduak lortu
+     * Denboraldi bateko partiduak lortu.
+     * @param denboraldia Denboraldia
+     * @return Denboraldi horretako partiduak
      */
     public static List<Partidua> getPartiduakByDenboraldia(String denboraldia) {
         List<Partidua> emaitza = new ArrayList<>();
@@ -310,7 +392,9 @@ public class Partidua {
     }
 
     /**
-     * Egiaztatu denboraldi bat hasita dagoen (gutxienez partida bat jokatu den)
+     * Egiaztatu denboraldi bat hasita dagoen (gutxienez partida bat jokatu den).
+     * @param denboraldia Denboraldia
+     * @return true denboraldia hasita badago, bestela false
      */
     public static boolean denboraldiaHasita(String denboraldia) {
         List<Partidua> partiduak = getPartiduakByDenboraldia(denboraldia);
@@ -323,24 +407,28 @@ public class Partidua {
     }
 
     /**
-     * Egiaztatu denboraldi bateko partidu guztiak jokatu diren
+     * Egiaztatu denboraldi bateko partidu guztiak jokatu diren.
+     * @param denboraldia Denboraldia
+     * @return true partidu guztiak jokatu badira, bestela false
      */
     public static boolean denboraldiaOsoaJokatuta(String denboraldia) {
         List<Partidua> partiduak = getPartiduakByDenboraldia(denboraldia);
         if (partiduak.isEmpty()) {
-            return false; // Ez dago partidurik, beraz ez dago osorik
+            return false;
         }
         
         for (Partidua p : partiduak) {
             if (!p.isPartiduaJokatuta()) {
-                return false; // Gutxienez partidu bat jokatu gabe dago
+                return false;
             }
         }
-        return true; // Partidu guztiak jokatu dira
+        return true;
     }
     
     /**
-     * Talde bat kodearen arabera bilatu eta itzuli
+     * Talde bat kodearen arabera bilatu eta itzuli.
+     * @param taldeKod Taldearen kodea
+     * @return Taldeak objektua edo null, ez badago taldea
      */
     public static Taldeak getTaldeaByKod(int taldeKod) {
         List<Taldeak> taldeak = Taldeak.TaldeFactory.sortuTaldeak();
@@ -354,6 +442,10 @@ public class Partidua {
 
     // ==================== BESTEAK ====================
 
+    /**
+     * Partiduaren informazioa string moduan itzultzen du.
+     * @return Partiduaren deskribapena
+     */
     @Override
     public String toString() {
         return etxeko_taldea + " vs " + kanpoko_taldea + " (" + etxekoTaldekoSetak + " - "

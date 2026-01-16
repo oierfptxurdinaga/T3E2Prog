@@ -5,26 +5,70 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Jokalaria klasea, jokalari baten oinarrizko informazioa eta jokalarien zerrenda kudeatzen dituena.
+ * <p>
+ * Klase honek jokalariaren datuak gordetzen ditu eta jokalariak taldearen arabera kudeatzeko metodoak eskaintzen ditu.
+ * </p>
+ */
 public class Jokalaria implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
+    /**
+     * Jokalariaren identifikatzailea.
+     */
     private int jokalarikod;
+
+    /**
+     * Jokalariaren izena.
+     */
     private String izena;
+
+    /**
+     * Jokalariaren NAN.
+     */
     private String nan;
+
+    /**
+     * Jokalariaren jaiotze data.
+     */
     private Date jaiotzeData;
+
+    /**
+     * Jokalariaren rola taldean.
+     */
     private String jokalariRola;
+
+    /**
+     * Jokalariaren taldearen kodea.
+     */
     private int taldeKod;
 
-    // Jokalari guztiak gordetzeko zerrenda
+    /**
+     * Jokalari guztiak gordetzeko zerrenda.
+     */
     private static List<Jokalaria> jokalariak;
 
     static {
         jokalariak = sortuJokalariak();
     }
 
+    /**
+     * Eraikitzaile hutsak, objektua sortzeko erabil daiteke.
+     */
     public Jokalaria() {
     }
 
+    /**
+     * Eraikitzaile parametrizatuak, jokalariaren datuak ezartzeko.
+     *
+     * @param jokalarikod Jokalariaren identifikatzailea
+     * @param nan         Jokalariaren NAN
+     * @param izena       Jokalariaren izena
+     * @param jaiotzeData Jokalariaren jaiotze data
+     * @param jokalariRola Jokalariaren rola
+     * @param taldeKod    Jokalariaren taldea kodez
+     */
     public Jokalaria(int jokalarikod, String nan, String izena, Date jaiotzeData, String jokalariRola, int taldeKod) {
         this.jokalarikod = jokalarikod;
         this.nan = nan;
@@ -34,58 +78,129 @@ public class Jokalaria implements Serializable {
         this.taldeKod = taldeKod;
     }
 
+    /**
+     * Jokalariaren identifikatzailea itzultzen du.
+     *
+     * @return Jokalariaren kodea
+     */
     public int getJokalarikod() {
         return jokalarikod;
     }
 
+    /**
+     * Jokalariaren identifikatzailea ezartzen du.
+     *
+     * @param jokalarikod Jokalariaren kode berria
+     */
     public void setJokalarikod(int jokalarikod) {
         this.jokalarikod = jokalarikod;
     }
 
+    /**
+     * Jokalariaren NAN itzultzen du.
+     *
+     * @return Jokalariaren NAN
+     */
     public String getNan() {
         return nan;
     }
 
+    /**
+     * Jokalariaren NAN ezartzen du.
+     *
+     * @param nan Jokalariaren NAN berria
+     */
     public void setNan(String nan) {
         this.nan = nan;
     }
 
+    /**
+     * Jokalariaren izena itzultzen du.
+     *
+     * @return Jokalariaren izena
+     */
     public String getIzena() {
         return izena;
     }
 
+    /**
+     * Jokalariaren izena ezartzen du.
+     *
+     * @param izena Jokalariaren izena berria
+     */
     public void setIzena(String izena) {
         this.izena = izena;
     }
 
+    /**
+     * Jokalariaren jaiotze data itzultzen du.
+     *
+     * @return Jaiotze data
+     */
     public Date getJaiotzeData() {
         return jaiotzeData;
     }
 
+    /**
+     * Jokalariaren jaiotze data ezartzen du.
+     *
+     * @param jaiotzeData Jaiotze data berria
+     */
     public void setJaiotzeData(Date jaiotzeData) {
         this.jaiotzeData = jaiotzeData;
     }
 
+    /**
+     * Jokalariaren rola itzultzen du.
+     *
+     * @return Jokalariaren rola
+     */
     public String getJokalariRola() {
         return jokalariRola;
     }
 
+    /**
+     * Jokalariaren rola ezartzen du.
+     *
+     * @param jokalariRola Jokalariaren rola berria
+     */
     public void setJokalariRola(String jokalariRola) {
         this.jokalariRola = jokalariRola;
     }
 
+    /**
+     * Jokalariaren taldea kodez itzultzen du.
+     *
+     * @return Taldearen kodea
+     */
     public int getTaldeKod() {
         return taldeKod;
     }
 
+    /**
+     * Jokalariaren taldea kodez ezartzen du.
+     *
+     * @param taldeKod Taldearen kode berria
+     */
     public void setTaldeKod(int taldeKod) {
         this.taldeKod = taldeKod;
     }
 
+    /**
+     * Jokalariaren informazioa string moduan itzultzen du.
+     *
+     * @return Jokalariaren izena eta rola
+     */
     @Override
     public String toString() {
         return izena + " - " + jokalariRola;
     }
+
+    /**
+     * Jokalari guztiak sortzen dituen metodo laguntzailea.
+     *
+     * @return Jokalari zerrenda
+     */
 
     // Jokalari guztiak sortzeko
     private static List<Jokalaria> sortuJokalariak() {
@@ -187,45 +302,50 @@ public class Jokalaria implements Serializable {
         return jokalarienZerrenda;
     }
     
-    // Talde baten jokalariak lortzeko
+    /**
+     * Talde baten jokalariak lortzen ditu talde kodearen arabera.
+     *
+     * @param taldeKod Taldearen kodea
+     * @return Taldeko jokalarien zerrenda
+     * @throws IllegalArgumentException Talde kodea baliogabea bada
+     * @throws IllegalStateException    Jokalari zerrenda nulua bada
+     */
     public static List<Jokalaria> getJokalariakByTaldea(int taldeKod) {
-        
         if (taldeKod < 0 || taldeKod > 6) {
             throw new IllegalArgumentException("Talde kode baliogabea: " + taldeKod);
         }
-        
-        List<Jokalaria> emaitza = new ArrayList<>();
-
         if (jokalariak == null) {
             throw new IllegalStateException("Jokalarien zerrenda nulua da.");
         }
-        
+        List<Jokalaria> emaitza = new ArrayList<>();
         for (Jokalaria j : jokalariak) {
             if (j != null && j.getTaldeKod() == taldeKod) {
                 emaitza.add(j);
             }
         }
-
         return emaitza;
     }
-    
-    // Jokalari bat traspasatzeko
+
+    /**
+     * Jokalaria traspasatzeko metodoa.
+     *
+     * @param jokalaria       Traspasatu nahi den jokalaria
+     * @param taldeHelburuKod Talde helburua kodez
+     * @return true, traspasatzea ondo burutu bada
+     * @throws IllegalArgumentException jokalaria null bada edo talde kodea baliogabea bada
+     * @throws IllegalStateException    jokalaria dagoeneko talde horretan badago edo ez badago datu basean
+     * @throws RuntimeException         errore orokorra eguneratzean
+     */
     public static boolean traspasatuJokalaria(Jokalaria jokalaria, int taldeHelburuKod) {
-        
-        // Balidazio zehatza
         if (jokalaria == null) {
             throw new IllegalArgumentException("Jokalaria ezin da nulua izan.");
         }
-        
         if (taldeHelburuKod < 1 || taldeHelburuKod > 6) {
             throw new IllegalArgumentException("Talde kode baliogabea: " + taldeHelburuKod);
         }
-        
         if (jokalaria.getTaldeKod() == taldeHelburuKod) {
             throw new IllegalStateException("Jokalaria dagoeneko talde honetan dago.");
         }
-        
-        // Egiaztatu jokalaria zerrendan dagoela
         boolean jokalariaExistitzenDa = false;
         for (Jokalaria j : jokalariak) {
             if (j != null && j.getJokalarikod() == jokalaria.getJokalarikod()) {
@@ -233,12 +353,9 @@ public class Jokalaria implements Serializable {
                 break;
             }
         }
-        
         if (!jokalariaExistitzenDa) {
             throw new IllegalStateException("Jokalaria ez da existitzen datu basean.");
         }
-        
-        // Egiaztatu helburuko taldea existitzen dela
         boolean helburuTaldeaExistitzenDa = false;
         for (int i = 1; i <= 6; i++) {
             if (i == taldeHelburuKod) {
@@ -246,12 +363,9 @@ public class Jokalaria implements Serializable {
                 break;
             }
         }
-        
         if (!helburuTaldeaExistitzenDa) {
             throw new IllegalStateException("Talde helburua ez da existitzen.");
         }
-        
-        // Taldea eguneratu
         try {
             jokalaria.setTaldeKod(taldeHelburuKod);
             return true;
@@ -260,9 +374,13 @@ public class Jokalaria implements Serializable {
         }
     }
 
-    // Kodearen bidez jokalari bat lortzeko
+    /**
+     * Jokalari bat kodearen arabera lortzen du.
+     *
+     * @param jokalarikod Jokalariaren kodea
+     * @return Jokalaria aurkitzen bada, bestela null
+     */
     public static Jokalaria getJokalariaId(int jokalarikod) {
-
         for (Jokalaria j : jokalariak) {
             if (j.getJokalarikod() == jokalarikod) {
                 return j;
@@ -270,8 +388,13 @@ public class Jokalaria implements Serializable {
         }
         return null;
     }
-    
-    // Metodoa taldearen izena kodearen arabera lortzeko
+
+    /**
+     * Taldearen izena kodearen arabera itzultzen du.
+     *
+     * @param taldeKod Taldearen kodea
+     * @return Taldearen izena, ezezaguna bada "Ezezaguna" itzultzen du
+     */
     public static String getTaldeIzenaByKod(int taldeKod) {
         switch (taldeKod) {
             case 1: return "Otxarkoaga Distira";

@@ -16,20 +16,35 @@ import Erronka2.model.Partidua;
 import Erronka2.model.TaldearenKlasifikazioa;
 
 /**
- * Klasifikazioa fitxaren interfazea
+ * Klasifikazioa fitxaren interfazea.
+ * Fitxa honetan sailkapen taula erakusten eta kudeatzen da.
  */
 public class KlasifikazioaMetodo {
 
+    /** Fitxa nagusia JPanel batean gordetzen du */
     private JPanel panela;
     
+    /** Saioa amaitzeko botoia */
     private JButton saioaAmaituBotoia;
+    /** Denboraldia aukeratzeko JComboBox */
     private JComboBox<String> denboraldiaCombo;
+    /** Sailkapen taula */
     private JTable klasifikazioaTaula;
+    /** Taularen modelo dinamikoa */
     private DefaultTableModel taulaModeloa;
-    private JButton gordeBotoia;      // Botón para guardar
-    private JButton kargatuBotoia;    // Botón para cargar
+    /** Klasifikazioa gordetzeko botoia */
+    private JButton gordeBotoia;
+    /** Klasifikazioa kargatzeko botoia */
+    private JButton kargatuBotoia;
+    /** Denboraldia amaitzeko botoia */
     private JButton amaituDenboraldiaBotoia;
 
+    /**
+     * Eraikitzailea.
+     * Pantaila eta osagai guztiak sortzen ditu.
+     * 
+     * @param urdina atzeko planoaren kolorea
+     */
     public KlasifikazioaMetodo(Color urdina) {
         panela = new JPanel(null);
         panela.setBackground(urdina);
@@ -41,7 +56,7 @@ public class KlasifikazioaMetodo {
         titulua.setBounds(320, 20, 400, 50);
         panela.add(titulua);
 
-        // Denboraldia aukeratzeko kombo kutxa
+        // Denboraldia aukeratzeko ComboBox
         denboraldiaCombo = new JComboBox<>();
         denboraldiaCombo.addItem("2022/2023");
         denboraldiaCombo.addItem("2023/2024");
@@ -84,13 +99,13 @@ public class KlasifikazioaMetodo {
         });
         panela.add(amaituDenboraldiaBotoia);
 
-        // Taula - modelo dinamikoarekin
+        // Taularen zutabeak eta modelo dinamikoa
         String[] zutabeak = {"Posizioa", "Taldea", "PJ", "PG", "PP", "Puntuak", "SI", "SG", "SD"};
         
         taulaModeloa = new DefaultTableModel(zutabeak, 0) {
             @Override
             public boolean isCellEditable(int errenkada, int zutabea) {
-                return false;
+                return false; // Taula ez da editagarria
             }
         };
         
@@ -100,7 +115,7 @@ public class KlasifikazioaMetodo {
         klasifikazioaTaula.setShowGrid(true);
         klasifikazioaTaula.setGridColor(Color.LIGHT_GRAY);
 
-        // Testua zentratu zutabeetan
+        // Testua zutabeetan zentratu
         DefaultTableCellRenderer zentratuErrendatzailea = new DefaultTableCellRenderer();
         zentratuErrendatzailea.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < klasifikazioaTaula.getColumnCount(); i++) {
@@ -111,11 +126,7 @@ public class KlasifikazioaMetodo {
         korritzePanela.setBounds(100, 150, 700, 250);
         panela.add(korritzePanela);
 
-        // ====================
-        // BOTOI NAGUSIAK (2 BOTOI BAKARRIK)
-        // ====================
-        
-        // 1. GORDE BOTOIA (Serializable formatuan)
+        // Gorde botoia (Serializable formatuan gordetzeko)
         gordeBotoia = new JButton("Gorde Klasifikazioa");
         gordeBotoia.setFont(new Font("Arial", Font.BOLD, 16));
         gordeBotoia.setBackground(new Color(0, 150, 0));
@@ -136,7 +147,7 @@ public class KlasifikazioaMetodo {
         });
         panela.add(gordeBotoia);
         
-        // 2. KARGATU BOTOIA (Serializable formatutik)
+        // Kargatu botoia (Serializable formatutik kargatzeko)
         kargatuBotoia = new JButton("Kargatu Klasifikazioa");
         kargatuBotoia.setFont(new Font("Arial", Font.BOLD, 16));
         kargatuBotoia.setBackground(new Color(0, 100, 200));
@@ -157,7 +168,7 @@ public class KlasifikazioaMetodo {
         });
         panela.add(kargatuBotoia);
 
-        // Saioa Amaitu botoia
+        // Saioa amaitzeko botoia
         saioaAmaituBotoia = new JButton("Saioa amaitu");
         saioaAmaituBotoia.setFont(new Font("Arial", Font.BOLD, 18));
         saioaAmaituBotoia.setBackground(Color.RED);
@@ -180,7 +191,7 @@ public class KlasifikazioaMetodo {
         });
         panela.add(saioaAmaituBotoia);
         
-        // Klasifikazioa kargatu hastean
+        // Hasierako klasifikazioa kargatu
         try {
             kargatuKlasifikazioa();
         } catch (Exception e) {
@@ -190,12 +201,13 @@ public class KlasifikazioaMetodo {
             e.printStackTrace();
         }
         
-        // Denboraldia amaitzeko botoiaren egoera eguneratu
+        // Amaitu botoiaren egoera eguneratu
         eguneratuAmaituBotoia();
     }
     
     /**
-     * Klasifikazioa Serializable formatuan gorde
+     * Klasifikazioa Serializable formatuan gordetzen du.
+     * @throws Exception fitxategiaren gordetzean erroreak badira
      */
     private void gordeKlasifikazioa() throws Exception {
         String denboraldia = (String) denboraldiaCombo.getSelectedItem();
@@ -203,12 +215,12 @@ public class KlasifikazioaMetodo {
             throw new IllegalArgumentException("Aukeratu denboraldi bat lehenik.");
         }
         
-        // Datuak prestatu serializatzeko
+        // Serializable objektua sortu datuekin
         SerializableKlasifikazioaDatuak datuak = new SerializableKlasifikazioaDatuak();
         datuak.setDenboraldia(denboraldia);
         datuak.setEguna(new Date());
         
-        // Taulako datuak biltzeko
+        // Taulako datuak bilduma batean sartu
         List<String[]> datuZerrenda = new ArrayList<>();
         for (int i = 0; i < taulaModeloa.getRowCount(); i++) {
             String[] errenkada = new String[taulaModeloa.getColumnCount()];
@@ -220,9 +232,9 @@ public class KlasifikazioaMetodo {
         }
         datuak.setDatuZerrenda(datuZerrenda);
         
-        // Klasifikazio osoa biltzeko (modeloko datuak)
+        // Klasifikazioa guztiz lortu (modelotik)
         List<TaldearenKlasifikazioa> klasifikazioaOsoa = Klasifikazioa.getKlasifikazioaOrdenatua();
-        datuak.setKlaseaEguneratua(false); // Gorde baino ez, ez eguneratu
+        datuak.setKlaseaEguneratua(false); // Ez da eguneratzen, soilik gordetzen
         
         JFileChooser fitxategiAukeratzailea = new JFileChooser();
         fitxategiAukeratzailea.setDialogTitle("Gorde klasifikazioa");
@@ -251,7 +263,8 @@ public class KlasifikazioaMetodo {
     }
     
     /**
-     * Klasifikazioa Serializable formatutik kargatu
+     * Klasifikazioa Serializable formatutik kargatzen du.
+     * @throws Exception fitxategia irekitzean edo irakurtzean erroreak badira
      */
     private void kargatuKlasifikazioaSerializable() throws Exception {
         JFileChooser fitxategiAukeratzailea = new JFileChooser();
@@ -262,7 +275,7 @@ public class KlasifikazioaMetodo {
         if (erabiltzaileHautapena == JFileChooser.APPROVE_OPTION) {
             File kargatzekoFitxategia = fitxategiAukeratzailea.getSelectedFile();
             
-            // Validar que el archivo existe y es legible
+            // Fitxategia existitzen den eta irakurgarria den egiaztatu
             if (!kargatzekoFitxategia.exists()) {
                 throw new FileNotFoundException("Fitxategia ez da aurkitu: " + kargatzekoFitxategia.getAbsolutePath());
             }
@@ -274,12 +287,12 @@ public class KlasifikazioaMetodo {
             try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(kargatzekoFitxategia))) {
                 SerializableKlasifikazioaDatuak datuak = (SerializableKlasifikazioaDatuak) in.readObject();
                 
-                // Validar datos cargados
+                // Kargatutako datuak balidatu
                 if (datuak == null) {
                     throw new IllegalStateException("Kargatutako datuak nuluek dira.");
                 }
                 
-                // Denboraldia eguneratu
+                // Denboraldia ComboBox eguneratu, aurkitzen bada hautatu, bestela gehitu
                 boolean denboraldiaAurkituta = false;
                 for (int i = 0; i < denboraldiaCombo.getItemCount(); i++) {
                     if (denboraldiaCombo.getItemAt(i).equals(datuak.getDenboraldia())) {
@@ -289,13 +302,12 @@ public class KlasifikazioaMetodo {
                     }
                 }
                 
-                // Ez bada aurkitu, gehitu
                 if (!denboraldiaAurkituta) {
                     denboraldiaCombo.addItem(datuak.getDenboraldia());
                     denboraldiaCombo.setSelectedItem(datuak.getDenboraldia());
                 }
                 
-                // Validar lista de datos
+                // Datu zerrenda balidatu
                 if (datuak.getDatuZerrenda() == null) {
                     throw new IllegalStateException("Kargatutako datu zerrenda nulua da.");
                 }
@@ -333,7 +345,8 @@ public class KlasifikazioaMetodo {
     }
     
     /**
-     * Klasea Serializable datuak gordetzeko
+     * Klase pribatu eta estatikoko serializable objektua.
+     * Klasifikazio datuak gordetzeko eta kargatzeko erabiltzen da.
      */
     private static class SerializableKlasifikazioaDatuak implements Serializable {
         private static final long serialVersionUID = 1L;
@@ -342,7 +355,7 @@ public class KlasifikazioaMetodo {
         private List<String[]> datuZerrenda;
         private boolean klaseaEguneratua;
         
-        // Constructor para validación
+        /** Eraikitzaile huts bat, datu zerrenda hasieratzen duena */
         public SerializableKlasifikazioaDatuak() {
             this.datuZerrenda = new ArrayList<>();
         }
@@ -390,7 +403,11 @@ public class KlasifikazioaMetodo {
     }
     
     /**
-     * Uneko denboraldia amaitzeko metodoa
+     * Uneko denboraldia amaitzeko metodoa.
+     * Erabiltzaileari baieztapen bat eskatzen dio eta amaitzen badu,
+     * fitxaketa egiteko aukera ematen du.
+     * 
+     * @throws Exception denboraldia amaitzean erroreak badira
      */
     private void amaituDenboraldia() throws Exception {
         String unekoDenboraldia = Partidua.getUnekoDenboraldia();
@@ -410,35 +427,28 @@ public class KlasifikazioaMetodo {
         }
         
         try {
-            // Denboraldia amaitu
             Partidua.amaituDenboraldia();
-            
-            // Konsolan erakutsi (log simulazioa)
             System.out.println("DENBORALDIA AMAITUTA: " + unekoDenboraldia + " Erabiltzaileak");
-            
             JOptionPane.showMessageDialog(panela, 
                 "Denboraldia amaitu da: " + unekoDenboraldia + "\n" +
                 "Orain fitxaketak egin ditzakezu edo denboraldi berri bat hasi.",
                 "Denboraldia Amaituta",
                 JOptionPane.INFORMATION_MESSAGE);
-            
-            // Interfazea eguneratu
             eguneratuAmaituBotoia();
-            
         } catch (Exception e) {
             throw new Exception("Errorea denboraldia amaitzerakoan: " + e.getMessage(), e);
         }
     }
     
     /**
-     * Denboraldia amaitzeko botoiaren egoera eguneratu
+     * Denboraldia amaitzeko botoiaren egoera eguneratzen du.
+     * Botoiaren testua eta tooltip-a eguneratzen dira uneko denboraldiaren arabera.
      */
     private void eguneratuAmaituBotoia() {
         try {
             String unekoDenboraldia = Partidua.getUnekoDenboraldia();
             
             if (unekoDenboraldia != null) {
-                // Denboraldi aktiboa dago
                 if (Partidua.isDenboraldiaHasita()) {
                     amaituDenboraldiaBotoia.setText("Amaitu Denboraldia: " + unekoDenboraldia);
                     amaituDenboraldiaBotoia.setToolTipText("Denboraldia amaitu fitxaketak egiteko");
@@ -447,14 +457,12 @@ public class KlasifikazioaMetodo {
                     amaituDenboraldiaBotoia.setToolTipText("Denboraldia dagoeneko amaitu da");
                 }
             } else {
-                // Ez dago denboraldi aktiborik
                 amaituDenboraldiaBotoia.setText("Amaitu Denboraldia");
                 amaituDenboraldiaBotoia.setToolTipText("Ez dago denboraldirik hasita");
             }
             
             amaituDenboraldiaBotoia.setEnabled(true);
         } catch (Exception e) {
-            // Si hay error, mantener botón en estado seguro
             amaituDenboraldiaBotoia.setText("Amaitu Denboraldia");
             amaituDenboraldiaBotoia.setToolTipText("Errorea egoera kargatzerakoan");
             amaituDenboraldiaBotoia.setEnabled(false);
@@ -463,7 +471,9 @@ public class KlasifikazioaMetodo {
     }
     
     /**
-     * Klasifikazioa taulan kargatzeko metodoa
+     * Klasifikazioa taulan kargatzeko metodoa.
+     * Klasifikazioa modelotik jaso eta taulan erakusten du.
+     * @throws Exception klasifikazioa kargatzerakoan erroreak badira
      */
     private void kargatuKlasifikazioa() throws Exception {
         taulaModeloa.setRowCount(0);
@@ -475,12 +485,10 @@ public class KlasifikazioaMetodo {
         }
         
         try {
-            // Klasifikazioa hasieratu partiduetatik
             Klasifikazioa.hasieratuPartiduetatik(denboraldiaHautatua);
             
             List<TaldearenKlasifikazioa> klasifikazioa = Klasifikazioa.getKlasifikazioaOrdenatua();
             
-            // Validar clasificación
             if (klasifikazioa == null) {
                 throw new IllegalStateException("Klasifikazioa nulua itzuli da.");
             }
@@ -509,7 +517,7 @@ public class KlasifikazioaMetodo {
                 taulaModeloa.addRow(errenkadaDatuak);
             }
             
-            // Errenkaden altuera doitzea
+            // Errenkaden altuera egokitu
             int errenkadaKopurua = taulaModeloa.getRowCount();
             if (errenkadaKopurua > 0) {
                 int altueraEskura = 227;
@@ -523,7 +531,8 @@ public class KlasifikazioaMetodo {
     }
     
     /**
-     * Taula eguneratzeko metodoa publiko
+     * Taula eguneratzeko metodo publikoa.
+     * Barruan kargatuKlasifikazioa metodoa deitzen du.
      */
     public void eguneratuTaula() {
         try {
@@ -537,8 +546,8 @@ public class KlasifikazioaMetodo {
     }
 
     /**
-     * Klasifikazioa panela hau itzultzen du
-     * @return JPanel diseinua daukana
+     * Klasifikazioa fitxaren JPanel-a itzultzen du.
+     * @return JPanel klasifikazioaren interfazearekin
      */
     public JPanel getPanela() {
         return panela;
